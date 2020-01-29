@@ -7,9 +7,6 @@ type AssertionError struct {
 	Line int
 }
 
-// Assertion provides a function to assert results, as well as a function to assert "comma ok" tuples and assert and recover from functions triggering panic
-type Assertion func(...interface{})
-
 // Error provides the error message for a failing assertion
 func (err *AssertionError) Error() string {
 	if err.Msg == "" {
@@ -19,12 +16,15 @@ func (err *AssertionError) Error() string {
 	return err.Msg
 }
 
+// Assertion provides a function to assert results, as well as a function to assert "comma ok" tuples and assert and recover from functions triggering panic
+type Assertion func(...interface{})
+
 // PanicMsg asserts that the provided function triggers panic with the provided message
 func (assert Assertion) PanicMsg(assertMsg func(interface{}) bool, do func()) {
 	defer func() {
 		err := recover()
 
-		assert(err != nil, "No panic")
+		assert(err != nil, "Panic expected")
 
 		if err != nil {
 			result := assertMsg(err)
