@@ -13,8 +13,8 @@ type FileReporter struct {
 // OutputReporter prints test details to STDOUT
 var OutputReporter *FileReporter = &FileReporter{os.Stdout}
 
-// BuildFileReporter instantiate a FileReporter for the provided file
-func BuildFileReporter(file *os.File) *FileReporter {
+// NewFileReporter instantiate a FileReporter for the provided file
+func NewFileReporter(file *os.File) *FileReporter {
 	return &FileReporter{file}
 }
 

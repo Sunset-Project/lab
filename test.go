@@ -13,11 +13,11 @@ type Test struct {
 }
 
 // NewTest prepares a new test unit to test code
-func NewTest(t *testing.T) *Test {
+func NewTest(t *testing.T, reporter Reporter) *Test {
 	test := &Test{}
 	test.t = t
 	test.assertion = Assertion(test.Assert)
-	test.reporter = DefaultReporter()
+	test.reporter = reporter
 	return test
 }
 

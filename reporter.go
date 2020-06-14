@@ -15,8 +15,3 @@ type Reporter interface {
 	TestSkipped(prose string)
 	TestStarted(prose string)
 }
-
-// DefaultReporter returns the default configured Reporter for `lab`
-func DefaultReporter() Reporter {
-	return BuildProxyReporter(OutputReporter)
-}
