@@ -27,5 +27,5 @@ func StartSession(t *testing.T) (func(...interface{}), func(...interface{}), Ass
 
 // DefaultSessionReporter returns the default configured Reporter for `lab`
 func DefaultSessionReporter() reporting.Reporter {
-	return reporting.NewProxyReporter(reporting.StdoutReporter)
+	return reporting.NewProxyReporter(reporting.StdoutReporter())
 }

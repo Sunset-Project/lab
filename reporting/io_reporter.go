@@ -11,8 +11,10 @@ type IOReporter struct {
 	Device io.Writer
 }
 
+var stdoutReporter *IOReporter = &IOReporter{Device: os.Stdout}
+
 // StdoutReporter prints test details to STDOUT
-var StdoutReporter *IOReporter = &IOReporter{Device: os.Stdout}
+func StdoutReporter() *IOReporter { return stdoutReporter }
 
 // NewIOReporter instantiate a FileReporter for the provided device
 func NewIOReporter(device io.Writer) *IOReporter {

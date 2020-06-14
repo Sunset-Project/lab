@@ -7,7 +7,7 @@ type ProxyReporter struct {
 
 // NewProxyReporter instantiate a ProxyReporter with the provided reporters
 func NewProxyReporter(reporters ...Reporter) *ProxyReporter {
-	return &ProxyReporter{reporters}
+	return &ProxyReporter{Reporters: reporters}
 }
 
 // Asserted broadcasts Asserted
