@@ -3,7 +3,7 @@ package lab
 import (
 	"testing"
 
-	"github.com/sunset-project/lab/reporting"
+	"github.com/Fire-Dragon-DoL/lab/reporting"
 )
 
 // Session represents a test session, within a single test function
