@@ -16,10 +16,18 @@ type Test struct {
 
 // NewTest prepares a new test unit to test code
 func NewTest(t *testing.T, reporter reporting.Reporter) *Test {
+	if t == nil {
+		panic(ArgumentError{"t", "is nil"})
+	}
+	if reporter == nil {
+		panic(ArgumentError{"reporter", "is nil"})
+	}
+
 	test := &Test{}
 	test.t = t
 	test.assertion = Assertion(test.Assert)
 	test.reporter = reporter
+
 	return test
 }
 

@@ -11,52 +11,47 @@ type IOReporter struct {
 	Device io.Writer
 }
 
-var stdoutReporter *IOReporter = &IOReporter{Device: os.Stdout}
+var stdoutReporter IOReporter = IOReporter{Device: os.Stdout}
 
 // StdoutReporter prints test details to STDOUT
-func StdoutReporter() *IOReporter { return stdoutReporter }
-
-// NewIOReporter instantiate a FileReporter for the provided device
-func NewIOReporter(device io.Writer) *IOReporter {
-	return &IOReporter{Device: device}
-}
+func StdoutReporter() IOReporter { return stdoutReporter }
 
 // Asserted does nothing
-func (reporter *IOReporter) Asserted() {}
+func (reporter IOReporter) Asserted() {}
 
 // ContextEntered prints the context name
-func (reporter *IOReporter) ContextEntered(prose string) {
+func (reporter IOReporter) ContextEntered(prose string) {
 	fmt.Fprintf(reporter.Device, "%s\n", prose)
 }
 
 // ContextExited does nothing
-func (reporter *IOReporter) ContextExited(prose string) {}
+func (reporter IOReporter) ContextExited(prose string) {}
 
 // ContextSkipped does nothing
-func (reporter *IOReporter) ContextSkipped(prose string) {}
+func (reporter IOReporter) ContextSkipped(prose string) {}
 
 // ContextSucceeded does nothing
-func (reporter *IOReporter) ContextSucceeded(prose string) {}
+func (reporter IOReporter) ContextSucceeded(prose string) {}
 
 // ContextFailed does nothing
-func (reporter *IOReporter) ContextFailed(prose string) {}
+func (reporter IOReporter) ContextFailed(prose string) {}
 
 // PanicInvoked does nothing
-func (reporter *IOReporter) PanicInvoked(msg interface{}) {}
+func (reporter IOReporter) PanicInvoked(msg interface{}) {}
 
 // TestFailed does nothing
-func (reporter *IOReporter) TestFailed(prose string) {}
+func (reporter IOReporter) TestFailed(prose string) {}
 
 // TestFinished does nothing
-func (reporter *IOReporter) TestFinished(prose string) {}
+func (reporter IOReporter) TestFinished(prose string) {}
 
 // TestPassed does nothing
-func (reporter *IOReporter) TestPassed(prose string) {}
+func (reporter IOReporter) TestPassed(prose string) {}
 
 // TestSkipped does nothing
-func (reporter *IOReporter) TestSkipped(prose string) {}
+func (reporter IOReporter) TestSkipped(prose string) {}
 
 // TestStarted does nothing
-func (reporter *IOReporter) TestStarted(prose string) {
+func (reporter IOReporter) TestStarted(prose string) {
 	fmt.Fprintf(reporter.Device, "\t%s\n", prose)
 }
