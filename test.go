@@ -1,19 +1,149 @@
 package lab
 
-import "testing"
+import (
+	"runtime"
+	"testing"
+)
 
-// Test represents a test execution
-type Test interface {
-	Context(...interface{})
-	Test(...interface{})
-	Assertion() Assertion
+// Test represents a single test in `go test`
+type Test struct {
+	t         *testing.T
+	assertion Assertion
+	reporter  Reporter
 }
 
-// BuildTest creates a new test test
-func BuildTest(t *testing.T) Test { return NewTestUnit(t) }
+// NewTest prepares a new test unit to test code
+func NewTest(t *testing.T) *Test {
+	test := &Test{}
+	test.t = t
+	test.assertion = Assertion(test.Assert)
+	test.reporter = DefaultReporter()
+	return test
+}
 
-// StartTest is a utility function to interact with a test Test without holding its reference. The returned tuple is the Context function, the Test function and the Assert function that work on the Test object
-func StartTest(t *testing.T) (func(...interface{}), func(...interface{}), Assertion) {
-	test := BuildTest(t)
-	return test.Context, test.Test, test.Assertion()
+// Context opens a new context for this test unit
+func (test *Test) Context(args ...interface{}) {
+	var prose string
+	var do func()
+
+	switch len(args) {
+	case 1:
+		prose = args[0].(string)
+	case 2:
+		prose = args[0].(string)
+		do = args[1].(func())
+	default:
+		panic(&ArgumentError{"args", "invalid amount"})
+	}
+
+	// EnterContext
+	test.reporter.ContextEntered(prose)
+	defer func() {
+		// LeaveContext
+		test.reporter.ContextExited(prose)
+	}()
+
+	if do == nil {
+		// SkipContext
+		test.reporter.ContextSkipped(prose)
+	} else {
+		defer func() {
+			err := recover()
+
+			if err == nil {
+				// SuccessContext
+				test.reporter.ContextSucceeded(prose)
+			} else {
+				// Output error
+				test.reporter.PanicInvoked(err)
+				// FailContext
+				test.reporter.ContextFailed(prose)
+				test.t.FailNow()
+			}
+		}()
+
+		do()
+	}
+}
+
+// Test opens a new test section for this test unit
+func (test *Test) Test(args ...interface{}) {
+	var prose string
+	var do func()
+
+	switch len(args) {
+	case 1:
+		prose = args[0].(string)
+	case 2:
+		prose = args[0].(string)
+		do = args[1].(func())
+	default:
+		panic(&ArgumentError{"args", "invalid amount"})
+	}
+
+	// EnterTest
+	test.reporter.TestStarted(prose)
+	defer func() {
+		// LeaveTest
+		test.reporter.TestFinished(prose)
+	}()
+
+	if do == nil {
+		// SkipTest
+		test.reporter.TestSkipped(prose)
+	} else {
+		defer func() {
+			err := recover()
+
+			if err == nil {
+				// SuccessTest
+				test.reporter.TestPassed(prose)
+			} else {
+				// Output error
+				test.reporter.PanicInvoked(err)
+				// FailTest
+				test.reporter.TestFailed(prose)
+				test.t.FailNow()
+			}
+		}()
+
+		do()
+	}
+}
+
+// Assertion provides a new assertion context
+func (test *Test) Assertion() Assertion {
+	return test.assertion
+}
+
+// Assert tests the result is successful (true)
+func (test *Test) Assert(args ...interface{}) {
+	assertOk := false
+	msg := "Assertion failed"
+	skip := 1
+
+	switch len(args) {
+	case 1:
+		assertOk = args[0].(bool)
+	case 2:
+		assertOk = args[0].(bool)
+		msg = args[1].(string)
+	case 3:
+		assertOk = args[0].(bool)
+		msg = args[1].(string)
+		skip = args[2].(int)
+	default:
+		panic(&ArgumentError{"args", "invalid amount"})
+	}
+
+	// Output Assert
+	test.reporter.Asserted()
+
+	if !assertOk {
+		if _, file, line, ok := runtime.Caller(skip); ok {
+			panic(&AssertionError{Msg: msg, File: file, Line: line})
+		}
+
+		panic(&AssertionError{Msg: msg})
+	}
 }

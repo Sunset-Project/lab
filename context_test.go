@@ -7,7 +7,7 @@ import (
 )
 
 func TestContext(t *testing.T) {
-	Context, Test, Assert := lab.StartTest(t)
+	Context, Test, Assert := lab.StartSession(t)
 	Context("Something", func() {
 		Test("Else", func() {
 			Assert(true)
@@ -16,9 +16,10 @@ func TestContext(t *testing.T) {
 }
 
 func TestContext2(t *testing.T) {
-	Context, Test, Assert := lab.StartTest(t)
+	Context, Test, Assert := lab.StartSession(t)
 	Context("Something2s", func() {
 		Test("Else2", func() {
+			panic("foo")
 			Assert(true)
 		})
 	})
