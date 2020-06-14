@@ -1,6 +1,7 @@
 package lab_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/sunset-project/lab"
@@ -19,7 +20,7 @@ func TestContext2(t *testing.T) {
 	Context, Test, Assert := lab.StartSession(t)
 	Context("Something2s", func() {
 		Test("Else2", func() {
-			Assert(false)
+			fmt.Println("woos")
 			Assert(true)
 		})
 	})

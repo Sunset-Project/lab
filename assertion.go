@@ -4,7 +4,7 @@ package lab
 type Assertion func(...interface{})
 
 // PanicMsg asserts that the provided function triggers panic with the provided message
-func (assert Assertion) PanicMsg(assertMsg func(interface{}) bool, do func()) {
+func (assert Assertion) PanicMsg(do func(), assertMsg func(interface{}) bool) {
 	defer func() {
 		err := recover()
 
@@ -20,12 +20,7 @@ func (assert Assertion) PanicMsg(assertMsg func(interface{}) bool, do func()) {
 
 // Panic asserts that the provided function triggers panic
 func (assert Assertion) Panic(do func()) {
-	assert.PanicMsg(any, do)
-}
-
-// Ok asserts that the provided "comma ok" tuple is successful
-func (assert Assertion) Ok(_ interface{}, ok bool) {
-	assert(ok, "Ok tuple unsuccessful")
+	assert.PanicMsg(do, any)
 }
 
 func any(_ interface{}) bool { return true }
