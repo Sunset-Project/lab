@@ -1,7 +1,7 @@
 package lab
 
 import (
-	"runtime"
+	"fmt"
 	"testing"
 
 	"github.com/Fire-Dragon-DoL/lab/reporting"
@@ -35,7 +35,7 @@ func (test *Test) Context(args ...interface{}) {
 		prose = args[0].(string)
 		do = args[1].(func())
 	default:
-		panic(&ArgumentError{"args", "invalid amount"})
+		panic(ArgumentError{"args", "invalid amount"})
 	}
 
 	// EnterContext
@@ -80,7 +80,7 @@ func (test *Test) Test(args ...interface{}) {
 		prose = args[0].(string)
 		do = args[1].(func())
 	default:
-		panic(&ArgumentError{"args", "invalid amount"})
+		panic(ArgumentError{"args", "invalid amount"})
 	}
 
 	// EnterTest
@@ -135,17 +135,18 @@ func (test *Test) Assert(args ...interface{}) {
 		msg = args[1].(string)
 		skip = args[2].(int)
 	default:
-		panic(&ArgumentError{"args", "invalid amount"})
+		panic(ArgumentError{"args", "invalid amount"})
 	}
 
 	// Output Assert
 	test.reporter.Asserted()
 
 	if !assertOk {
-		if _, file, line, ok := runtime.Caller(skip); ok {
-			panic(&AssertionError{Msg: msg, File: file, Line: line})
-		}
+		// if _, file, line, ok := runtime.Caller(skip); ok {
+		// 	panic(&AssertionError{Msg: msg, File: file, Line: line})
+		// }
+		fmt.Printf("%+v", skip)
 
-		panic(&AssertionError{Msg: msg})
+		panic(AssertionError{Msg: msg})
 	}
 }

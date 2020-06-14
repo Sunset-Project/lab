@@ -9,7 +9,7 @@ type ArgumentError struct {
 }
 
 // Error provides the error message for invalid argument
-func (err *ArgumentError) Error() string {
+func (err ArgumentError) Error() string {
 	msg := "is invalid"
 	if err.Msg != "" {
 		msg = err.Msg
