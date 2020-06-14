@@ -19,7 +19,7 @@ func TestContext2(t *testing.T) {
 	Context, Test, Assert := lab.StartSession(t)
 	Context("Something2s", func() {
 		Test("Else2", func() {
-			panic("foo")
+			Assert(false)
 			Assert(true)
 		})
 	})

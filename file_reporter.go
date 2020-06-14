@@ -7,15 +7,15 @@ import (
 
 // FileReporter prints test details to a file
 type FileReporter struct {
-	file *os.File
+	File *os.File
 }
 
-// OutputReporter prints test details to STDOUT
-var OutputReporter *FileReporter = &FileReporter{os.Stdout}
+// StdoutReporter prints test details to STDOUT
+var StdoutReporter *FileReporter = &FileReporter{File: os.Stdout}
 
 // NewFileReporter instantiate a FileReporter for the provided file
 func NewFileReporter(file *os.File) *FileReporter {
-	return &FileReporter{file}
+	return &FileReporter{File: file}
 }
 
 // Asserted does nothing
@@ -23,7 +23,7 @@ func (reporter *FileReporter) Asserted() {}
 
 // ContextEntered prints the context name
 func (reporter *FileReporter) ContextEntered(prose string) {
-	fmt.Fprintf(reporter.file, "%s\n", prose)
+	fmt.Fprintf(reporter.File, "%s\n", prose)
 }
 
 // ContextExited does nothing
@@ -55,5 +55,5 @@ func (reporter *FileReporter) TestSkipped(prose string) {}
 
 // TestStarted does nothing
 func (reporter *FileReporter) TestStarted(prose string) {
-	fmt.Fprintf(reporter.file, "\t%s\n", prose)
+	fmt.Fprintf(reporter.File, "\t%s\n", prose)
 }
