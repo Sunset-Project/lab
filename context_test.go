@@ -14,3 +14,12 @@ func TestContext(t *testing.T) {
 		})
 	})
 }
+
+func TestContext2(t *testing.T) {
+	Context, Test, Assert := lab.StartTest(t)
+	Context("Something2s", func() {
+		Test("Else2", func() {
+			Assert(true)
+		})
+	})
+}

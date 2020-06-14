@@ -9,6 +9,7 @@ import (
 type TestUnit struct {
 	t         *testing.T
 	assertion Assertion
+	reporter  Reporter
 }
 
 // NewTestUnit prepares a new test unit to test code
@@ -16,6 +17,7 @@ func NewTestUnit(t *testing.T) *TestUnit {
 	unit := &TestUnit{}
 	unit.t = t
 	unit.assertion = Assertion(unit.Assert)
+	unit.reporter = DefaultReporter()
 	return unit
 }
 
@@ -35,22 +37,27 @@ func (unit *TestUnit) Context(args ...interface{}) {
 	}
 
 	// EnterContext
+	unit.reporter.ContextEntered(prose)
 	defer func() {
 		// LeaveContext
+		unit.reporter.ContextExited(prose)
 	}()
 
 	if do == nil {
 		// SkipContext
-		panic(prose) // Temporary to avoid no use of prose compiler error
+		unit.reporter.ContextSkipped(prose)
 	} else {
 		defer func() {
 			err := recover()
 
 			if err == nil {
 				// SuccessContext
+				unit.reporter.ContextSucceeded(prose)
 			} else {
 				// Output error
+				unit.reporter.PanicInvoked(err)
 				// FailContext
+				unit.reporter.ContextFailed(prose)
 			}
 		}()
 
@@ -74,22 +81,27 @@ func (unit *TestUnit) Test(args ...interface{}) {
 	}
 
 	// EnterTest
+	unit.reporter.TestStarted(prose)
 	defer func() {
 		// LeaveTest
+		unit.reporter.TestFinished(prose)
 	}()
 
 	if do == nil {
 		// SkipTest
-		panic(prose) // Temporary to avoid no use of prose compiler error
+		unit.reporter.TestSkipped(prose)
 	} else {
 		defer func() {
 			err := recover()
 
 			if err == nil {
 				// SuccessTest
+				unit.reporter.TestPassed(prose)
 			} else {
 				// Output error
+				unit.reporter.PanicInvoked(err)
 				// FailTest
+				unit.reporter.TestFailed(prose)
 			}
 		}()
 
@@ -123,6 +135,7 @@ func (unit *TestUnit) Assert(args ...interface{}) {
 	}
 
 	// Output Assert
+	unit.reporter.Asserted()
 
 	if !assertOk {
 		if _, file, line, ok := runtime.Caller(skip); ok {
