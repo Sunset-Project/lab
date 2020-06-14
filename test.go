@@ -3,17 +3,19 @@ package lab
 import (
 	"runtime"
 	"testing"
+
+	"github.com/sunset-project/lab/reporting"
 )
 
 // Test represents a single test in `go test`
 type Test struct {
 	t         *testing.T
 	assertion Assertion
-	reporter  Reporter
+	reporter  reporting.Reporter
 }
 
 // NewTest prepares a new test unit to test code
-func NewTest(t *testing.T, reporter Reporter) *Test {
+func NewTest(t *testing.T, reporter reporting.Reporter) *Test {
 	test := &Test{}
 	test.t = t
 	test.assertion = Assertion(test.Assert)

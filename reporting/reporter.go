@@ -1,4 +1,4 @@
-package lab
+package reporting
 
 // Reporter can be used to customize the output of `lab`
 type Reporter interface {

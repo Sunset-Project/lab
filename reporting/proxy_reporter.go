@@ -1,4 +1,4 @@
-package lab
+package reporting
 
 // ProxyReporter broadcast reporter calls to all configured reporters
 type ProxyReporter struct {

@@ -1,6 +1,10 @@
 package lab
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/sunset-project/lab/reporting"
+)
 
 // Session represents a test session, within a single test function
 type Session interface {
@@ -10,7 +14,7 @@ type Session interface {
 }
 
 // NewSession creates a new test session
-func NewSession(t *testing.T, reporter Reporter) Session {
+func NewSession(t *testing.T, reporter reporting.Reporter) Session {
 	return NewTest(t, reporter)
 }
 
@@ -22,6 +26,6 @@ func StartSession(t *testing.T) (func(...interface{}), func(...interface{}), Ass
 }
 
 // DefaultSessionReporter returns the default configured Reporter for `lab`
-func DefaultSessionReporter() Reporter {
-	return NewProxyReporter(StdoutReporter)
+func DefaultSessionReporter() reporting.Reporter {
+	return reporting.NewProxyReporter(reporting.StdoutReporter)
 }
