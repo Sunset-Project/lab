@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Fire-Dragon-DoL/lab/trace"
+	"github.com/sunset-project/lab/trace"
 )
 
 // IOReporter prints test details to a device

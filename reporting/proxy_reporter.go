@@ -1,6 +1,6 @@
 package reporting
 
-import "github.com/Fire-Dragon-DoL/lab/trace"
+import "github.com/sunset-project/lab/trace"
 
 // ProxyReporter broadcast reporter calls to all configured reporters
 type ProxyReporter struct {

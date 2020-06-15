@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Fire-Dragon-DoL/lab"
+	"github.com/sunset-project/lab"
 )
 
 func TestContext(t *testing.T) {

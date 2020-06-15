@@ -1,6 +1,6 @@
 package reporting
 
-import "github.com/Fire-Dragon-DoL/lab/trace"
+import "github.com/sunset-project/lab/trace"
 
 // Reporter can be used to customize the output of `lab`
 type Reporter interface {

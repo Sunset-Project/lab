@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Fire-Dragon-DoL/lab/reporting"
-	"github.com/Fire-Dragon-DoL/lab/trace"
+	"github.com/sunset-project/lab/reporting"
+	"github.com/sunset-project/lab/trace"
 )
 
 // Test represents a single test in `go test`

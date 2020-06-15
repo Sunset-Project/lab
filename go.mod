@@ -1,4 +1,4 @@
-module github.com/Fire-Dragon-DoL/lab
+module github.com/sunset-project/lab
 
 go 1.14
 
