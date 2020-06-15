@@ -1,4 +1,4 @@
-package panic
+package trace
 
 import (
 	"fmt"
@@ -23,8 +23,8 @@ func (msg Message) Error() string {
 }
 
 // NewMessage instantiates a new `Message` with StackTrace attached
-func NewMessage() Message {
-	msg := Message{}
+func NewMessage(data interface{}) Message {
+	msg := Message{Data: data}
 	errors.WithStack(msg)
 
 	return msg

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Fire-Dragon-DoL/lab/reporting"
+	"github.com/Fire-Dragon-DoL/lab/trace"
 )
 
 // Test represents a single test in `go test`
@@ -65,7 +66,8 @@ func (test *Test) Context(args ...interface{}) {
 				test.reporter.ContextSucceeded(prose)
 			} else {
 				// Output error
-				test.reporter.PanicInvoked(err)
+				panicMsg := trace.NewMessage(err)
+				test.reporter.PanicInvoked(panicMsg)
 				// FailContext
 				test.reporter.ContextFailed(prose)
 				test.t.FailNow()
@@ -110,7 +112,8 @@ func (test *Test) Test(args ...interface{}) {
 				test.reporter.TestPassed(prose)
 			} else {
 				// Output error
-				test.reporter.PanicInvoked(err)
+				panicMsg := trace.NewMessage(err)
+				test.reporter.PanicInvoked(panicMsg)
 				// FailTest
 				test.reporter.TestFailed(prose)
 				test.t.FailNow()

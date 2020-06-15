@@ -1,5 +1,7 @@
 package reporting
 
+import "github.com/Fire-Dragon-DoL/lab/trace"
+
 // ProxyReporter broadcast reporter calls to all configured reporters
 type ProxyReporter struct {
 	Reporters []Reporter
@@ -53,7 +55,7 @@ func (reporter ProxyReporter) ContextFailed(prose string) {
 }
 
 // PanicInvoked broadcasts PanicInvoked
-func (reporter ProxyReporter) PanicInvoked(msg interface{}) {
+func (reporter ProxyReporter) PanicInvoked(msg trace.Message) {
 	for _, r := range reporter.Reporters {
 		r.PanicInvoked(msg)
 	}

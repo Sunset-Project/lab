@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/Fire-Dragon-DoL/lab/trace"
 )
 
 // IOReporter prints test details to a device
@@ -37,7 +39,7 @@ func (reporter IOReporter) ContextSucceeded(prose string) {}
 func (reporter IOReporter) ContextFailed(prose string) {}
 
 // PanicInvoked does nothing
-func (reporter IOReporter) PanicInvoked(msg interface{}) {}
+func (reporter IOReporter) PanicInvoked(msg trace.Message) {}
 
 // TestFailed does nothing
 func (reporter IOReporter) TestFailed(prose string) {}
