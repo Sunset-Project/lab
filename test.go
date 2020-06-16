@@ -156,7 +156,7 @@ func (test *Test) Assert(args ...interface{}) {
 		// if _, file, line, ok := runtime.Caller(skip); ok {
 		// 	panic(&AssertionError{Msg: msg, File: file, Line: line})
 		// }
-		fmt.Printf("%+v", skip)
+		fmt.Printf("temporary %+v\n", skip)
 
 		panic(AssertionError{Msg: msg})
 	}

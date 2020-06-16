@@ -3,95 +3,88 @@ package reporting
 import "github.com/sunset-project/lab/trace"
 
 // ProxyReporter broadcast reporter calls to all configured reporters
-type ProxyReporter struct {
-	Reporters []Reporter
-}
-
-// NewProxyReporter instantiate a ProxyReporter with the provided reporters
-func NewProxyReporter(reporters ...Reporter) ProxyReporter {
-	return ProxyReporter{Reporters: reporters}
-}
+type ProxyReporter []Reporter
 
 // Asserted broadcasts Asserted
-func (reporter ProxyReporter) Asserted() {
-	for _, r := range reporter.Reporters {
-		r.Asserted()
+func (reporters ProxyReporter) Asserted() {
+	for _, reporter := range reporters {
+		reporter.Asserted()
 	}
 }
 
 // ContextEntered broadcasts ContextEntered
-func (reporter ProxyReporter) ContextEntered(prose string) {
-	for _, r := range reporter.Reporters {
-		r.ContextEntered(prose)
+func (reporters ProxyReporter) ContextEntered(prose string) {
+	for _, reporter := range reporters {
+		reporter.ContextEntered(prose)
 	}
 }
 
 // ContextExited broadcasts ContextExited
-func (reporter ProxyReporter) ContextExited(prose string) {
-	for _, r := range reporter.Reporters {
-		r.ContextExited(prose)
+func (reporters ProxyReporter) ContextExited(prose string) {
+	for _, reporter := range reporters {
+		reporter.ContextExited(prose)
 	}
 }
 
 // ContextSkipped broadcasts ContextSkipped
-func (reporter ProxyReporter) ContextSkipped(prose string) {
-	for _, r := range reporter.Reporters {
-		r.ContextSkipped(prose)
+func (reporters ProxyReporter) ContextSkipped(prose string) {
+	for _, reporter := range reporters {
+		reporter.ContextSkipped(prose)
 	}
 }
 
 // ContextSucceeded broadcasts ContextSucceeded
-func (reporter ProxyReporter) ContextSucceeded(prose string) {
-	for _, r := range reporter.Reporters {
-		r.ContextSucceeded(prose)
+func (reporters ProxyReporter) ContextSucceeded(prose string) {
+	for _, reporter := range reporters {
+		reporter.ContextSucceeded(prose)
 	}
 }
 
 // ContextFailed broadcasts ContextFailed
-func (reporter ProxyReporter) ContextFailed(prose string) {
-	for _, r := range reporter.Reporters {
-		r.ContextFailed(prose)
+func (reporters ProxyReporter) ContextFailed(prose string) {
+	for _, reporter := range reporters {
+		reporter.ContextFailed(prose)
 	}
 }
 
 // PanicInvoked broadcasts PanicInvoked
-func (reporter ProxyReporter) PanicInvoked(msg trace.Message) {
-	for _, r := range reporter.Reporters {
-		r.PanicInvoked(msg)
+func (reporters ProxyReporter) PanicInvoked(msg trace.Message) {
+	for _, reporter := range reporters {
+		reporter.PanicInvoked(msg)
 	}
 }
 
 // TestFailed broadcasts TestFailed
-func (reporter ProxyReporter) TestFailed(prose string) {
-	for _, r := range reporter.Reporters {
-		r.TestFailed(prose)
+func (reporters ProxyReporter) TestFailed(prose string) {
+	for _, reporter := range reporters {
+		reporter.TestFailed(prose)
 	}
 }
 
 // TestFinished broadcasts TestFinished
-func (reporter ProxyReporter) TestFinished(prose string) {
-	for _, r := range reporter.Reporters {
-		r.TestFinished(prose)
+func (reporters ProxyReporter) TestFinished(prose string) {
+	for _, reporter := range reporters {
+		reporter.TestFinished(prose)
 	}
 }
 
 // TestPassed broadcasts TestPassed
-func (reporter ProxyReporter) TestPassed(prose string) {
-	for _, r := range reporter.Reporters {
-		r.TestPassed(prose)
+func (reporters ProxyReporter) TestPassed(prose string) {
+	for _, reporter := range reporters {
+		reporter.TestPassed(prose)
 	}
 }
 
 // TestSkipped broadcasts TestSkipped
-func (reporter ProxyReporter) TestSkipped(prose string) {
-	for _, r := range reporter.Reporters {
-		r.TestSkipped(prose)
+func (reporters ProxyReporter) TestSkipped(prose string) {
+	for _, reporter := range reporters {
+		reporter.TestSkipped(prose)
 	}
 }
 
 // TestStarted broadcasts TestStarted
-func (reporter ProxyReporter) TestStarted(prose string) {
-	for _, r := range reporter.Reporters {
-		r.TestStarted(prose)
+func (reporters ProxyReporter) TestStarted(prose string) {
+	for _, reporter := range reporters {
+		reporter.TestStarted(prose)
 	}
 }
