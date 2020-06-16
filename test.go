@@ -1,31 +1,28 @@
 package lab
 
 import (
-	"fmt"
-	"testing"
-
 	"github.com/sunset-project/lab/reporting"
 	"github.com/sunset-project/lab/trace"
 )
 
 // Test represents a single test in `go test`
 type Test struct {
-	t         *testing.T
-	assertion Assertion
-	reporter  reporting.Reporter
+	controller TestController
+	assertion  Assertion
+	reporter   reporting.Reporter
 }
 
 // NewTest prepares a new test unit to test code
-func NewTest(t *testing.T, reporter reporting.Reporter) *Test {
-	if t == nil {
-		panic(ArgumentError{"t", "is nil"})
+func NewTest(controller TestController, reporter reporting.Reporter) *Test {
+	if controller == nil {
+		panic(ArgumentError{"controller", "is nil"})
 	}
 	if reporter == nil {
 		panic(ArgumentError{"reporter", "is nil"})
 	}
 
 	test := &Test{}
-	test.t = t
+	test.controller = controller
 	test.assertion = Assertion(test.Assert)
 	test.reporter = reporter
 
@@ -70,7 +67,7 @@ func (test *Test) Context(args ...interface{}) {
 				test.reporter.PanicInvoked(panicMsg)
 				// FailContext
 				test.reporter.ContextFailed(prose)
-				test.t.FailNow()
+				test.controller.FailNow()
 			}
 		}()
 
@@ -116,7 +113,7 @@ func (test *Test) Test(args ...interface{}) {
 				test.reporter.PanicInvoked(panicMsg)
 				// FailTest
 				test.reporter.TestFailed(prose)
-				test.t.FailNow()
+				test.controller.FailNow()
 			}
 		}()
 
@@ -133,7 +130,6 @@ func (test *Test) Assertion() Assertion {
 func (test *Test) Assert(args ...interface{}) {
 	assertOk := false
 	msg := "Assertion failed"
-	skip := 1
 
 	switch len(args) {
 	case 1:
@@ -144,7 +140,6 @@ func (test *Test) Assert(args ...interface{}) {
 	case 3:
 		assertOk = args[0].(bool)
 		msg = args[1].(string)
-		skip = args[2].(int)
 	default:
 		panic(ArgumentError{"args", "invalid amount"})
 	}
@@ -153,11 +148,6 @@ func (test *Test) Assert(args ...interface{}) {
 	test.reporter.Asserted()
 
 	if !assertOk {
-		// if _, file, line, ok := runtime.Caller(skip); ok {
-		// 	panic(&AssertionError{Msg: msg, File: file, Line: line})
-		// }
-		fmt.Printf("temporary %+v\n", skip)
-
 		panic(AssertionError{Msg: msg})
 	}
 }

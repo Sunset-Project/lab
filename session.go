@@ -1,8 +1,6 @@
 package lab
 
 import (
-	"testing"
-
 	"github.com/sunset-project/lab/reporting"
 )
 
@@ -14,14 +12,14 @@ type Session interface {
 }
 
 // NewSession creates a new test session
-func NewSession(t *testing.T, reporter reporting.Reporter) Session {
-	return NewTest(t, reporter)
+func NewSession(controller TestController, reporter reporting.Reporter) Session {
+	return NewTest(controller, reporter)
 }
 
 // StartSession is a utility function to interact with a test Session without holding its reference. The returned tuple is the Context function, the Test function and the Assert function that work on the Session object
-func StartSession(t *testing.T) (func(...interface{}), func(...interface{}), Assertion) {
+func StartSession(controller TestController) (func(...interface{}), func(...interface{}), Assertion) {
 	reporter := DefaultSessionReporter()
-	session := NewSession(t, reporter)
+	session := NewSession(controller, reporter)
 	return session.Context, session.Test, session.Assertion()
 }
 
