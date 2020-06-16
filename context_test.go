@@ -21,7 +21,8 @@ func TestContext2(t *testing.T) {
 	Context("Something2s", func() {
 		Test("Else2", func() {
 			fmt.Println("woos")
-			Assert(true)
+			panic("foo")
+			Assert(false)
 		})
 	})
 }

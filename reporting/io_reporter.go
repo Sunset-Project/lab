@@ -39,7 +39,9 @@ func (reporter IOReporter) ContextSucceeded(prose string) {}
 func (reporter IOReporter) ContextFailed(prose string) {}
 
 // PanicInvoked does nothing
-func (reporter IOReporter) PanicInvoked(msg trace.Message) {}
+func (reporter IOReporter) PanicInvoked(msg trace.Message) {
+	fmt.Fprintf(reporter.Device, "\t%s\n\t%+v\n", msg.Error(), msg.StackTrace())
+}
 
 // TestFailed does nothing
 func (reporter IOReporter) TestFailed(prose string) {}

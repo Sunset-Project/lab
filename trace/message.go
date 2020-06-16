@@ -7,25 +7,61 @@ import (
 )
 
 // Message holds data returned from panic, with Stacktrace attached
-type Message struct {
-	Data interface{}
+type Message interface {
+	Data() interface{}
+	StackTrace() errors.StackTrace
+	error
 }
 
+type message struct {
+	data   interface{}
+	tracer stackTracer
+}
+
+// Data provides argument passed to the panic function
+func (msg message) Data() interface{} { return msg.data }
+
+// DataString provides `Data` converted to `string` if possible, using `fmt.Stringer` or `Data` directly if already a `string`
+func (msg message) DataString() (string, bool) {
+	if stringer, ok := msg.data.(fmt.Stringer); ok {
+		return stringer.String(), true
+	}
+
+	if text, ok := msg.data.(string); ok {
+		return text, true
+	}
+
+	return "", false
+}
+
+// StackTrace provides the stack trace for the message
+func (msg message) StackTrace() errors.StackTrace { return msg.tracer.StackTrace() }
+
 // Error provides the error message for a panic
-func (msg Message) Error() string {
+func (msg message) Error() string {
 	text := "Panic"
 
-	if stringer, ok := msg.Data.(fmt.Stringer); ok {
-		text = fmt.Sprintf("Panic: %s", stringer.String())
+	if dataText, ok := msg.DataString(); ok {
+		text = fmt.Sprintf("Panic: %s", dataText)
 	}
 
 	return text
 }
 
-// NewMessage instantiates a new `Message` with StackTrace attached
+// NewMessage instantiates a new `Message` with `errors.StackTrace` attached
 func NewMessage(data interface{}) Message {
-	msg := Message{Data: data}
-	errors.WithStack(msg)
+	err := errors.New("Panic")
+	tracer := err.(stackTracer)
+	msg := message{data: data, tracer: tracer}
 
-	return msg
+	return Message(msg)
+}
+
+type stackTracer interface {
+	StackTrace() errors.StackTrace
+	error
+}
+
+func asString(data interface{}) {
+
 }
