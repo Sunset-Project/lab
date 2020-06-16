@@ -14,8 +14,8 @@ type Message interface {
 }
 
 type message struct {
-	data   interface{}
-	tracer stackTracer
+	data interface{}
+	err  errorWithStackTrace
 }
 
 // Data provides argument passed to the panic function
@@ -35,7 +35,7 @@ func (msg message) DataString() (string, bool) {
 }
 
 // StackTrace provides the stack trace for the message
-func (msg message) StackTrace() errors.StackTrace { return msg.tracer.StackTrace() }
+func (msg message) StackTrace() errors.StackTrace { return msg.err.StackTrace() }
 
 // Error provides the error message for a panic
 func (msg message) Error() string {
@@ -51,17 +51,13 @@ func (msg message) Error() string {
 // NewMessage instantiates a new `Message` with `errors.StackTrace` attached
 func NewMessage(data interface{}) Message {
 	err := errors.New("Panic")
-	tracer := err.(stackTracer)
-	msg := message{data: data, tracer: tracer}
+	errWithStack := err.(errorWithStackTrace)
+	msg := message{data: data, err: errWithStack}
 
 	return Message(msg)
 }
 
-type stackTracer interface {
+type errorWithStackTrace interface {
 	StackTrace() errors.StackTrace
 	error
-}
-
-func asString(data interface{}) {
-
 }
