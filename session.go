@@ -13,7 +13,7 @@ type Session interface {
 
 // NewSession creates a new test session
 func NewSession(controller TestController, reporter reporting.Reporter) Session {
-	return NewTest(controller, reporter)
+	return NewTestSession(controller, reporter)
 }
 
 // StartSession is a utility function to interact with a test Session without holding its reference. The returned tuple is the Context function, the Test function and the Assert function that work on the Session object

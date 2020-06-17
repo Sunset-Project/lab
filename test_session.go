@@ -5,14 +5,13 @@ import (
 	"github.com/sunset-project/lab/trace"
 )
 
-// Test represents a single test in `go test`
-type Test struct {
-	Controller TestController
-	Reporter   reporting.Reporter
+type testSession struct {
+	controller TestController
+	reporter   reporting.Reporter
 }
 
-// NewTest prepares a new test unit to test code
-func NewTest(controller TestController, reporter reporting.Reporter) *Test {
+// NewTestSession prepares a new test unit to test code
+func NewTestSession(controller TestController, reporter reporting.Reporter) *testSession {
 	if controller == nil {
 		panic(ArgumentError{"controller", "is nil"})
 	}
@@ -20,15 +19,15 @@ func NewTest(controller TestController, reporter reporting.Reporter) *Test {
 		panic(ArgumentError{"reporter", "is nil"})
 	}
 
-	test := &Test{}
-	test.Controller = controller
-	test.Reporter = reporter
+	test := &testSession{}
+	test.controller = controller
+	test.reporter = reporter
 
 	return test
 }
 
 // Context opens a new context for this test unit
-func (test *Test) Context(args ...interface{}) {
+func (test *testSession) Context(args ...interface{}) {
 	var prose string
 	var do func()
 
@@ -43,29 +42,29 @@ func (test *Test) Context(args ...interface{}) {
 	}
 
 	// EnterContext
-	test.Reporter.ContextEntered(prose)
+	test.reporter.ContextEntered(prose)
 	defer func() {
 		// LeaveContext
-		test.Reporter.ContextExited(prose)
+		test.reporter.ContextExited(prose)
 	}()
 
 	if do == nil {
 		// SkipContext
-		test.Reporter.ContextSkipped(prose)
+		test.reporter.ContextSkipped(prose)
 	} else {
 		defer func() {
 			err := recover()
 
 			if err == nil {
 				// SuccessContext
-				test.Reporter.ContextSucceeded(prose)
+				test.reporter.ContextSucceeded(prose)
 			} else {
 				// Output error
 				panicMsg := trace.NewMessage(err)
-				test.Reporter.PanicInvoked(panicMsg)
+				test.reporter.PanicInvoked(panicMsg)
 				// FailContext
-				test.Reporter.ContextFailed(prose)
-				test.Controller.FailNow()
+				test.reporter.ContextFailed(prose)
+				test.controller.FailNow()
 			}
 		}()
 
@@ -74,7 +73,7 @@ func (test *Test) Context(args ...interface{}) {
 }
 
 // Test opens a new test section for this test unit
-func (test *Test) Test(args ...interface{}) {
+func (test *testSession) Test(args ...interface{}) {
 	var prose string
 	var do func()
 
@@ -89,29 +88,29 @@ func (test *Test) Test(args ...interface{}) {
 	}
 
 	// EnterTest
-	test.Reporter.TestStarted(prose)
+	test.reporter.TestStarted(prose)
 	defer func() {
 		// LeaveTest
-		test.Reporter.TestFinished(prose)
+		test.reporter.TestFinished(prose)
 	}()
 
 	if do == nil {
 		// SkipTest
-		test.Reporter.TestSkipped(prose)
+		test.reporter.TestSkipped(prose)
 	} else {
 		defer func() {
 			err := recover()
 
 			if err == nil {
 				// SuccessTest
-				test.Reporter.TestPassed(prose)
+				test.reporter.TestPassed(prose)
 			} else {
 				// Output error
 				panicMsg := trace.NewMessage(err)
-				test.Reporter.PanicInvoked(panicMsg)
+				test.reporter.PanicInvoked(panicMsg)
 				// FailTest
-				test.Reporter.TestFailed(prose)
-				test.Controller.FailNow()
+				test.reporter.TestFailed(prose)
+				test.controller.FailNow()
 			}
 		}()
 
@@ -120,10 +119,10 @@ func (test *Test) Test(args ...interface{}) {
 }
 
 // Assertion provides a new assertion context
-func (test *Test) Assertion() Assertion { return Assertion(test.Assert) }
+func (test *testSession) Assertion() Assertion { return Assertion(test.Assert) }
 
 // Assert tests the result is successful (true)
-func (test *Test) Assert(args ...interface{}) {
+func (test *testSession) Assert(args ...interface{}) {
 	assertOk := false
 	msg := "Assertion failed"
 
@@ -141,7 +140,7 @@ func (test *Test) Assert(args ...interface{}) {
 	}
 
 	// Output Assert
-	test.Reporter.Asserted()
+	test.reporter.Asserted()
 
 	if !assertOk {
 		panic(AssertionError{Msg: msg})
