@@ -7,9 +7,8 @@ import (
 
 // Test represents a single test in `go test`
 type Test struct {
-	controller TestController
-	assertion  Assertion
-	reporter   reporting.Reporter
+	Controller TestController
+	Reporter   reporting.Reporter
 }
 
 // NewTest prepares a new test unit to test code
@@ -22,9 +21,8 @@ func NewTest(controller TestController, reporter reporting.Reporter) *Test {
 	}
 
 	test := &Test{}
-	test.controller = controller
-	test.assertion = Assertion(test.Assert)
-	test.reporter = reporter
+	test.Controller = controller
+	test.Reporter = reporter
 
 	return test
 }
@@ -45,29 +43,29 @@ func (test *Test) Context(args ...interface{}) {
 	}
 
 	// EnterContext
-	test.reporter.ContextEntered(prose)
+	test.Reporter.ContextEntered(prose)
 	defer func() {
 		// LeaveContext
-		test.reporter.ContextExited(prose)
+		test.Reporter.ContextExited(prose)
 	}()
 
 	if do == nil {
 		// SkipContext
-		test.reporter.ContextSkipped(prose)
+		test.Reporter.ContextSkipped(prose)
 	} else {
 		defer func() {
 			err := recover()
 
 			if err == nil {
 				// SuccessContext
-				test.reporter.ContextSucceeded(prose)
+				test.Reporter.ContextSucceeded(prose)
 			} else {
 				// Output error
 				panicMsg := trace.NewMessage(err)
-				test.reporter.PanicInvoked(panicMsg)
+				test.Reporter.PanicInvoked(panicMsg)
 				// FailContext
-				test.reporter.ContextFailed(prose)
-				test.controller.FailNow()
+				test.Reporter.ContextFailed(prose)
+				test.Controller.FailNow()
 			}
 		}()
 
@@ -91,29 +89,29 @@ func (test *Test) Test(args ...interface{}) {
 	}
 
 	// EnterTest
-	test.reporter.TestStarted(prose)
+	test.Reporter.TestStarted(prose)
 	defer func() {
 		// LeaveTest
-		test.reporter.TestFinished(prose)
+		test.Reporter.TestFinished(prose)
 	}()
 
 	if do == nil {
 		// SkipTest
-		test.reporter.TestSkipped(prose)
+		test.Reporter.TestSkipped(prose)
 	} else {
 		defer func() {
 			err := recover()
 
 			if err == nil {
 				// SuccessTest
-				test.reporter.TestPassed(prose)
+				test.Reporter.TestPassed(prose)
 			} else {
 				// Output error
 				panicMsg := trace.NewMessage(err)
-				test.reporter.PanicInvoked(panicMsg)
+				test.Reporter.PanicInvoked(panicMsg)
 				// FailTest
-				test.reporter.TestFailed(prose)
-				test.controller.FailNow()
+				test.Reporter.TestFailed(prose)
+				test.Controller.FailNow()
 			}
 		}()
 
@@ -122,9 +120,7 @@ func (test *Test) Test(args ...interface{}) {
 }
 
 // Assertion provides a new assertion context
-func (test *Test) Assertion() Assertion {
-	return test.assertion
-}
+func (test *Test) Assertion() Assertion { return Assertion(test.Assert) }
 
 // Assert tests the result is successful (true)
 func (test *Test) Assert(args ...interface{}) {
@@ -145,7 +141,7 @@ func (test *Test) Assert(args ...interface{}) {
 	}
 
 	// Output Assert
-	test.reporter.Asserted()
+	test.Reporter.Asserted()
 
 	if !assertOk {
 		panic(AssertionError{Msg: msg})
