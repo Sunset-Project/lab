@@ -1,4 +1,4 @@
-package labctrls
+package controls
 
 import (
 	"github.com/sunset-project/lab"

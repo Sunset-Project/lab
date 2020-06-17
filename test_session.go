@@ -31,6 +31,7 @@ func NewTestSession(controller TestController, reporter reporting.Reporter) *tes
 func (test *testSession) Context(args ...interface{}) {
 	var prose string
 	var do func()
+	panicked := true
 
 	switch len(args) {
 	case 1:
@@ -56,27 +57,29 @@ func (test *testSession) Context(args ...interface{}) {
 		defer func() {
 			err := recover()
 
-			if err == nil {
-				// SuccessContext
-				test.reporter.ContextSucceeded(prose)
-			} else {
+			if panicked {
 				// Output error
 				panicMsg := trace.NewMessage(err)
 				test.reporter.PanicInvoked(panicMsg)
 				// FailContext
 				test.reporter.ContextFailed(prose)
 				test.controller.FailNow()
+			} else {
+				// SuccessContext
+				test.reporter.ContextSucceeded(prose)
 			}
 		}()
 
 		do()
 	}
+	panicked = false
 }
 
 // Test opens a new test section for this test unit
 func (test *testSession) Test(args ...interface{}) {
 	var prose string
 	var do func()
+	panicked := true
 
 	switch len(args) {
 	case 1:
@@ -100,23 +103,24 @@ func (test *testSession) Test(args ...interface{}) {
 		test.reporter.TestSkipped(prose)
 	} else {
 		defer func() {
-			err := recover()
 
-			if err == nil {
-				// SuccessTest
-				test.reporter.TestPassed(prose)
-			} else {
+			if panicked {
+				err := recover()
 				// Output error
 				panicMsg := trace.NewMessage(err)
 				test.reporter.PanicInvoked(panicMsg)
 				// FailTest
 				test.reporter.TestFailed(prose)
 				test.controller.FailNow()
+			} else {
+				// SuccessTest
+				test.reporter.TestPassed(prose)
 			}
 		}()
 
 		do()
 	}
+	panicked = false
 }
 
 // Assertion provides a new assertion context
