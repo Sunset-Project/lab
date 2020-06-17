@@ -1,6 +1,7 @@
 package lab
 
 import (
+	"github.com/sunset-project/lab/asserting"
 	"github.com/sunset-project/lab/reporting"
 	"github.com/sunset-project/lab/trace"
 )
@@ -119,7 +120,7 @@ func (test *testSession) Test(args ...interface{}) {
 }
 
 // Assertion provides a new assertion context
-func (test *testSession) Assertion() Assertion { return Assertion(test.Assert) }
+func (test *testSession) Assertion() asserting.Assertion { return asserting.Assertion(test.Assert) }
 
 // Assert tests the result is successful (true)
 func (test *testSession) Assert(args ...interface{}) {
@@ -143,6 +144,6 @@ func (test *testSession) Assert(args ...interface{}) {
 	test.reporter.Asserted()
 
 	if !assertOk {
-		panic(AssertionError{Msg: msg})
+		panic(asserting.AssertionError{Msg: msg})
 	}
 }

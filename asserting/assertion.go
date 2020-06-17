@@ -1,4 +1,4 @@
-package lab
+package asserting
 
 // Assertion provides a function to assert results, as well as a function to assert "comma ok" tuples and assert and recover from functions triggering panic
 type Assertion func(...interface{})

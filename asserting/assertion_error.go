@@ -1,4 +1,4 @@
-package lab
+package asserting
 
 // AssertionError is used as panic message when assertion fails
 type AssertionError struct {

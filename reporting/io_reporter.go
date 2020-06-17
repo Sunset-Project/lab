@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/sunset-project/lab/asserting"
 	"github.com/sunset-project/lab/trace"
 )
 
@@ -40,7 +41,11 @@ func (reporter IOReporter) ContextFailed(prose string) {}
 
 // PanicInvoked does nothing
 func (reporter IOReporter) PanicInvoked(msg trace.Message) {
-	fmt.Fprintf(reporter.Device, "\t%s\n\t%+v\n", msg.Error(), msg.StackTrace())
+	if err, ok := msg.Data().(asserting.AssertionError); ok {
+		fmt.Fprintf(reporter.Device, "\t%s\n", err.Error())
+	} else {
+		fmt.Fprintf(reporter.Device, "\t%s\n\t%+v\n", msg.Error(), msg.StackTrace())
+	}
 }
 
 // TestFailed does nothing
