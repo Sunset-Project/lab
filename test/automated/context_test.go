@@ -14,13 +14,7 @@ func TestContext(t *testing.T) {
 		session, reporter, controller := controls.SessionExample()
 
 		Context("No function", func() {
-			skipped := reporter.ContextSkippedCount
-
 			session.Context("")
-
-			Test("Skipped reported", func() {
-				Assert(reporter.ContextSkippedCount == skipped+1)
-			})
 
 			signals := reporter.LastRecordedSignals(3)
 
@@ -32,16 +26,21 @@ func TestContext(t *testing.T) {
 		})
 
 		Context("Function with panic", func() {
-			failed := reporter.ContextFailedCount
 			immediateFailures := controller.ImmediateFailures
 
 			session.Context("", func() { panic(nil) })
 
-			Test("Failed reported", func() {
-				Assert(reporter.ContextFailedCount == failed+1)
-			})
-			Test("Test controller fails", func() {
+			Test("Test controller Fails Now", func() {
 				Assert(controller.ImmediateFailures == immediateFailures+1)
+			})
+
+			signals := reporter.LastRecordedSignals(4)
+
+			Test("Report sequence is Enter, Panic, Fail, Exit", func() {
+				Assert(signals[0] == reporting.SigContextEntered)
+				Assert(signals[1] == reporting.SigPanicInvoked)
+				Assert(signals[2] == reporting.SigContextFailed)
+				Assert(signals[3] == reporting.SigContextExited)
 			})
 		})
 	})
