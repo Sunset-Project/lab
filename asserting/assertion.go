@@ -5,17 +5,21 @@ type Assertion func(...interface{})
 
 // PanicMsg asserts that the provided function triggers panic with the provided message
 func (assert Assertion) PanicMsg(do func(), assertMsg func(interface{}) bool) {
+	panicked := true
+
 	defer func() {
 		err := recover()
 
-		assert(err != nil, "Panic expected")
+		assert(panicked, "Panic expected")
 
-		if err != nil {
+		if panicked {
 			result := assertMsg(err)
 			assert(result, "Invalid panic message")
 		}
 	}()
 	do()
+
+	panicked = false
 }
 
 // Panic asserts that the provided function triggers panic
