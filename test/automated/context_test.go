@@ -43,5 +43,23 @@ func TestContext(t *testing.T) {
 				Assert(signals[3] == reporting.SigContextExited)
 			})
 		})
+
+		Context("Function without panic", func() {
+			immediateFailures := controller.ImmediateFailures
+
+			session.Context("", func() {})
+
+			Test("Test controller didn't Fail", func() {
+				Assert(controller.ImmediateFailures == immediateFailures)
+			})
+
+			signals := reporter.LastRecordedSignals(3)
+
+			Test("Report sequence is Enter, Success, Exit", func() {
+				Assert(signals[0] == reporting.SigContextEntered)
+				Assert(signals[1] == reporting.SigContextSucceeded)
+				Assert(signals[2] == reporting.SigContextExited)
+			})
+		})
 	})
 }

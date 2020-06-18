@@ -6,19 +6,7 @@ import (
 
 // DiagnosticReporter provides affordances to inspect Reporter usage
 type DiagnosticReporter struct {
-	AssertedCount         uint
-	ContextEnteredCount   uint
-	ContextExitedCount    uint
-	ContextSkippedCount   uint
-	ContextSucceededCount uint
-	ContextFailedCount    uint
-	PanicInvokedCount     uint
-	TestFailedCount       uint
-	TestFinishedCount     uint
-	TestPassedCount       uint
-	TestSkippedCount      uint
-	TestStartedCount      uint
-	Recorded              []DiagnosticMessage
+	Recorded []DiagnosticMessage
 }
 
 // DiagnosticMessage represents a call a `Reporter` method along with the provided arguments
@@ -69,86 +57,74 @@ func (reporter *DiagnosticReporter) LastRecordedSignals(amount uint) []Signal {
 	return signals
 }
 
-// Asserted increases AssertedCount by 1
+// Asserted records SigAsserted
 func (reporter *DiagnosticReporter) Asserted() {
-	reporter.AssertedCount = reporter.AssertedCount + 1
 	message := DiagnosticMessage{SigAsserted, nil}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// ContextEntered increases ContextEnteredCount by 1
+// ContextEntered records SigContextEntered
 func (reporter *DiagnosticReporter) ContextEntered(prose string) {
-	reporter.ContextEnteredCount = reporter.ContextEnteredCount + 1
 	message := DiagnosticMessage{SigContextEntered, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// ContextExited increases ContextExitedCount by 1
+// ContextExited records SigContextExited
 func (reporter *DiagnosticReporter) ContextExited(prose string) {
-	reporter.ContextExitedCount = reporter.ContextExitedCount + 1
 	message := DiagnosticMessage{SigContextExited, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// ContextSkipped increases ContextSkippedCount by 1
+// ContextSkipped records SigContextSkipped
 func (reporter *DiagnosticReporter) ContextSkipped(prose string) {
-	reporter.ContextSkippedCount = reporter.ContextSkippedCount + 1
 	message := DiagnosticMessage{SigContextSkipped, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// ContextSucceeded increases ContextSucceededCount by 1
+// ContextSucceeded records SigContextSucceeded
 func (reporter *DiagnosticReporter) ContextSucceeded(prose string) {
-	reporter.ContextSucceededCount = reporter.ContextSucceededCount + 1
 	message := DiagnosticMessage{SigContextSucceeded, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// ContextFailed increases ContextFailedCount by 1
+// ContextFailed records SigContextFailed
 func (reporter *DiagnosticReporter) ContextFailed(prose string) {
-	reporter.ContextFailedCount = reporter.ContextFailedCount + 1
 	message := DiagnosticMessage{SigContextFailed, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// PanicInvoked increases PanicInvokedCount by 1
+// PanicInvoked records SigPanicInvoked
 func (reporter *DiagnosticReporter) PanicInvoked(traceMsg trace.Message) {
-	reporter.PanicInvokedCount = reporter.PanicInvokedCount + 1
 	message := DiagnosticMessage{SigPanicInvoked, traceMsg}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// TestFailed increases TestFailedCount by 1
+// TestFailed records SigTestFailed
 func (reporter *DiagnosticReporter) TestFailed(prose string) {
-	reporter.TestFailedCount = reporter.TestFailedCount + 1
 	message := DiagnosticMessage{SigTestFailed, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// TestFinished increases TestFinishedCount by 1
+// TestFinished records SigTestFinished
 func (reporter *DiagnosticReporter) TestFinished(prose string) {
-	reporter.TestFinishedCount = reporter.TestFinishedCount + 1
 	message := DiagnosticMessage{SigTestFinished, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// TestPassed increases TestPassedCount by 1
+// TestPassed records SigTestPassed
 func (reporter *DiagnosticReporter) TestPassed(prose string) {
-	reporter.TestPassedCount = reporter.TestPassedCount + 1
 	message := DiagnosticMessage{SigTestPassed, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// TestSkipped increases TestSkippedCount by 1
+// TestSkipped records SigTestSkipped
 func (reporter *DiagnosticReporter) TestSkipped(prose string) {
-	reporter.TestSkippedCount = reporter.TestSkippedCount + 1
 	message := DiagnosticMessage{SigTestSkipped, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
 
-// TestStarted increases TestStartedCount by 1
+// TestStarted records SigTestStarted
 func (reporter *DiagnosticReporter) TestStarted(prose string) {
-	reporter.TestStartedCount = reporter.TestStartedCount + 1
 	message := DiagnosticMessage{SigTestStarted, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
