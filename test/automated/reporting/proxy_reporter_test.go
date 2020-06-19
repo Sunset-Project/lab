@@ -1,4 +1,4 @@
-package lab_test
+package reporting_test
 
 import (
 	"testing"
