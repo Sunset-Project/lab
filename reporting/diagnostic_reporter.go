@@ -20,18 +20,18 @@ type Signal string
 
 // Signals registered by the `DiagnosticReporter`
 const (
-	SigAsserted         Signal = "SigAsserted"
-	SigContextEntered   Signal = "SigContextEntered"
-	SigContextExited    Signal = "SigContextExited"
-	SigContextSkipped   Signal = "SigContextSkipped"
-	SigContextSucceeded Signal = "SigContextSucceeded"
-	SigContextFailed    Signal = "SigContextFailed"
-	SigPanicInvoked     Signal = "SigPanicInvoked"
-	SigTestFailed       Signal = "SigTestFailed"
-	SigTestFinished     Signal = "SigTestFinished"
-	SigTestPassed       Signal = "SigTestPassed"
-	SigTestSkipped      Signal = "SigTestSkipped"
-	SigTestStarted      Signal = "SigTestStarted"
+	SigAsserted         Signal = "Asserted"
+	SigContextEntered   Signal = "ContextEntered"
+	SigContextExited    Signal = "ContextExited"
+	SigContextSkipped   Signal = "ContextSkipped"
+	SigContextSucceeded Signal = "ContextSucceeded"
+	SigContextFailed    Signal = "ContextFailed"
+	SigPanicInvoked     Signal = "PanicInvoked"
+	SigTestFailed       Signal = "TestFailed"
+	SigTestFinished     Signal = "TestFinished"
+	SigTestPassed       Signal = "TestPassed"
+	SigTestSkipped      Signal = "TestSkipped"
+	SigTestStarted      Signal = "TestStarted"
 )
 
 // LastRecorded returns the last N recorded diagnostic messages
