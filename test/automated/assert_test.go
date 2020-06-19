@@ -72,5 +72,59 @@ func TestAssert(t *testing.T) {
 				})
 			})
 		})
+
+		Context("Panic message", func() {
+			Context("Function with no panic", func() {
+				Test("Panics with AssertionError", func() {
+					Assert.PanicMsg(
+						func() { assert.Panic(func() {}) },
+						func(err interface{}) bool {
+							_, ok := err.(asserting.AssertionError)
+							return ok
+						},
+					)
+				})
+
+				signals := reporter.LastRecordedSignals(1)
+
+				Test("Report sequence is Asserted", func() {
+					Assert(signals[0] == reporting.SigAsserted)
+				})
+			})
+			Context("Function with panic", func() {
+				Context("Message matches", func() {
+					assert.PanicMsg(
+						func() { panic(nil) },
+						func(_ interface{}) bool { return true },
+					)
+					signals := reporter.LastRecordedSignals(1)
+
+					Test("Report sequence is Asserted", func() {
+						Assert(signals[0] == reporting.SigAsserted)
+					})
+				})
+
+				Context("Message does not match", func() {
+					panicNow := func() { panic(nil) }
+					noMatch := func(_ interface{}) bool { return false }
+
+					Test("Panics with AssertionError", func() {
+						Assert.PanicMsg(
+							func() { assert.PanicMsg(panicNow, noMatch) },
+							func(err interface{}) bool {
+								_, ok := err.(asserting.AssertionError)
+								return ok
+							},
+						)
+					})
+
+					signals := reporter.LastRecordedSignals(1)
+
+					Test("Report sequence is Asserted", func() {
+						Assert(signals[0] == reporting.SigAsserted)
+					})
+				})
+			})
+		})
 	})
 }
