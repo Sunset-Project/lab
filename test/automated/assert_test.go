@@ -62,6 +62,15 @@ func TestAssert(t *testing.T) {
 					Assert(signals[0] == reporting.SigAsserted)
 				})
 			})
+
+			Context("Function with panic", func() {
+				assert.Panic(func() { panic(nil) })
+				signals := reporter.LastRecordedSignals(1)
+
+				Test("Report sequence is Asserted", func() {
+					Assert(signals[0] == reporting.SigAsserted)
+				})
+			})
 		})
 	})
 }
