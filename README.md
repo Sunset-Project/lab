@@ -1,51 +1,76 @@
+# Lab
+
+Go test suite built on top of `go test`
+
+## Defining a test
+
+A `lab` test is a traditional `go test` with a special syntax to improve
+the output.
+The following is an example that can be used as a baseline:
+
 ```go
-func TestSomething(test *testing.T) {
-  t := lab.New(test)
-	t.Context("Foo", func() {
-    t.Context("Bar", func() {
-      t.Context("Baz", func() {
-        t.Test("Something", func() {
-          t.Assert(1 == 1)
-          t.Assert(2 == 2)
-        })
-      })
-    })
-  })
-}
+package apackage_test
 
+import (
+	"testing"
 
-func TestSomething(test *testing.T) {
-  Context, Test := lab.New(test)
-	t.Context("Foo", func() {
-    t.Context("Bar", func() {
-      t.Context("Baz", func() {
-        t.Test("Something", func() {
-          t.Assert(1 == 1)
-          t.Assert(2 == 2)
-        })
-      })
+	"github.com/sunset-project/lab"
+)
+
+func TestSomething(t *testing.T) {
+  // Starts a lab test session
+  Context, Test, Assert := lab.StartSession(t)
+  Context("A context", func() {
+    Test("A test", func() {
+      Assert(true)
+      Assert.Panic(func() { panic("panic") })
+      Assert.PanicMsg(
+        func() { panic("panic") },
+        func(data interface{}) {
+          _, ok := data.(string)
+          return ok
+        }
+      )
     })
   })
 }
 ```
 
-# Functions
-- lab.BuildTest
-- Assert
-- Test
-- Context
-- Assert.Panic
-- Assert.Ok - `_, ok`
+## Running tests
 
-# Objects
+Define the following bash function
 
-## Session
-List of all ongoing tests.
-Synchronizes the output for one test at a time
-Global (synchronization point)
+```bash
+lab() {
+  if [ $# -gt 0 ]; then
+    go test -v -count=1 $@
+    return $?
+  else
+    go test -v -count=1 './...'
+    return $?
+  fi
+}
+```
 
-## Output
-Formatted printing of test proses
+Tests can be executed from the project directory with
 
-## Test
-Test contexts and data for a single test file (test function)
+```bash
+lab
+```
+
+To selectively execute a single test-file, the following command can be used:
+
+```bash
+lab a/test/file_test.go
+```
+
+## TODO
+
+- IO Reporter
+  - [ ] Indentation should increase for each nested block
+  - [ ] Failed assertion line should be printed in the output
+  - [ ] Output should be colored
+  - [ ] Output coloring should be activated when it's a tty
+- [ ] `lab` bash function should be an executable released as part of this
+  package
+- [ ] Configuration through environment variables
