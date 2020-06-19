@@ -14,16 +14,16 @@ func TestDiagnosticStringWriter(t *testing.T) {
 		writer := &reporting.DiagnosticStringWriter{}
 
 		Context("Writes", func() {
-			text1 := "A line\n"
-			text2 := "Another line\n"
-			fmt.Fprintf(writer, text1)
-			fmt.Fprintf(writer, text2)
+			text := "A line\n"
+			otherText := "Another line\n"
+			fmt.Fprintf(writer, text)
+			fmt.Fprintf(writer, otherText)
 
-			writes := writer.LastRecorded(2)
+			recorded := writer.LastRecorded(2)
 
 			Test("Records all written strings", func() {
-				Assert(writes[0] == text1)
-				Assert(writes[1] == text2)
+				Assert(recorded[0] == text)
+				Assert(recorded[1] == otherText)
 			})
 		})
 	})
