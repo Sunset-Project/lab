@@ -12,9 +12,13 @@ import (
 // IOReporter prints test details to a device
 type IOReporter struct {
 	Device io.Writer
+	output *OutputWriter
 }
 
-var stdoutReporter IOReporter = IOReporter{Device: os.Stdout}
+var stdoutReporter IOReporter = IOReporter{
+	Device: os.Stdout
+	output: &OutputWriter{StylingEnabled: true}
+}
 
 // StdoutReporter prints test details to STDOUT
 func StdoutReporter() IOReporter { return stdoutReporter }
