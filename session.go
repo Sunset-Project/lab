@@ -17,10 +17,15 @@ func NewSession(controller TestController, reporter reporting.Reporter) Session 
 	return NewTestSession(controller, reporter)
 }
 
+// BuildSession creates a new operational test session
+func BuildSession(controller TestController) Session {
+	reporter := DefaultSessionReporter()
+	return NewTestSession(controller, reporter)
+}
+
 // StartSession is a utility function to interact with a test Session without holding its reference. The returned tuple is the Context function, the Test function and the Assert function that work on the `Session`
 func StartSession(controller TestController) (func(...interface{}), func(...interface{}), asserting.Assertion) {
-	reporter := DefaultSessionReporter()
-	session := NewSession(controller, reporter)
+	session := BuildSession(controller)
 	return UseSession(session)
 }
 

@@ -6,13 +6,14 @@ import (
 	"github.com/sunset-project/lab/trace"
 )
 
-type testSession struct {
+// TestSession represent the execution of a set of tests within one `go test` function
+type TestSession struct {
 	controller TestController
 	reporter   reporting.Reporter
 }
 
 // NewTestSession prepares a new test unit to test code
-func NewTestSession(controller TestController, reporter reporting.Reporter) *testSession {
+func NewTestSession(controller TestController, reporter reporting.Reporter) *TestSession {
 	if controller == nil {
 		panic(ArgumentError{"controller", "is nil"})
 	}
@@ -20,7 +21,7 @@ func NewTestSession(controller TestController, reporter reporting.Reporter) *tes
 		panic(ArgumentError{"reporter", "is nil"})
 	}
 
-	test := &testSession{}
+	test := &TestSession{}
 	test.controller = controller
 	test.reporter = reporter
 
@@ -28,7 +29,7 @@ func NewTestSession(controller TestController, reporter reporting.Reporter) *tes
 }
 
 // Context opens a new context for this test unit
-func (test *testSession) Context(args ...interface{}) {
+func (test *TestSession) Context(args ...interface{}) {
 	var prose string
 	var do func()
 	panicked := true
@@ -61,8 +62,10 @@ func (test *testSession) Context(args ...interface{}) {
 
 			if panicked {
 				// Output error
-				panicMsg := trace.NewMessage(err)
-				test.reporter.PanicInvoked(panicMsg)
+				if !test.controller.Failed() {
+					panicMsg := trace.NewMessage(err)
+					test.reporter.PanicInvoked(panicMsg)
+				}
 				// FailContext
 				test.reporter.ContextFailed(prose)
 				blockResult = reporting.BlockFailed
@@ -79,7 +82,7 @@ func (test *testSession) Context(args ...interface{}) {
 }
 
 // Test opens a new test section for this test unit
-func (test *testSession) Test(args ...interface{}) {
+func (test *TestSession) Test(args ...interface{}) {
 	var prose string
 	var do func()
 	panicked := true
@@ -108,12 +111,13 @@ func (test *testSession) Test(args ...interface{}) {
 		blockResult = reporting.BlockSkipped
 	} else {
 		defer func() {
-
 			if panicked {
 				err := recover()
 				// Output error
-				panicMsg := trace.NewMessage(err)
-				test.reporter.PanicInvoked(panicMsg)
+				if !test.controller.Failed() {
+					panicMsg := trace.NewMessage(err)
+					test.reporter.PanicInvoked(panicMsg)
+				}
 				// FailTest
 				test.reporter.TestFailed(prose)
 				blockResult = reporting.BlockFailed
@@ -130,10 +134,10 @@ func (test *testSession) Test(args ...interface{}) {
 }
 
 // Assertion provides a new assertion context
-func (test *testSession) Assertion() asserting.Assertion { return asserting.Assertion(test.Assert) }
+func (test *TestSession) Assertion() asserting.Assertion { return asserting.Assertion(test.Assert) }
 
 // Assert tests the result is successful (true)
-func (test *testSession) Assert(args ...interface{}) {
+func (test *TestSession) Assert(args ...interface{}) {
 	assertOk := false
 	msg := "Assertion failed"
 

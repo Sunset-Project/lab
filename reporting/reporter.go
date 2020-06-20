@@ -27,3 +27,18 @@ type Reporter interface {
 	TestSkipped(prose string)
 	TestStarted(prose string)
 }
+
+func (result BlockResult) String() string {
+	var text string
+
+	switch result {
+	case BlockSucceeded:
+		text = "Succeeded"
+	case BlockSkipped:
+		text = "Skipped"
+	case BlockFailed:
+		text = "Failed"
+	}
+
+	return text
+}

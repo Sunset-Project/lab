@@ -160,8 +160,6 @@ func TestDiagnosticReporter(t *testing.T) {
 
 			messages := reporter.LastRecorded(1)
 
-			Test("Foo special")
-
 			Test("Records TestFinished message", func() {
 				Assert(messages[0].Signal == reporting.SigTestFinished)
 				Assert(messages[0].Data.(string) == "finished")
