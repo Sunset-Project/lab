@@ -16,12 +16,10 @@ func TestTest(t *testing.T) {
 		Context("No function", func() {
 			session.Test("")
 
-			signals := reporter.LastRecordedSignals(3)
+			signals := reporter.LastRecordedSignals(1)
 
-			Test("Report sequence is Start, Skip, Finish", func() {
-				Assert(signals[0] == reporting.SigTestStarted)
-				Assert(signals[1] == reporting.SigTestSkipped)
-				Assert(signals[2] == reporting.SigTestFinished)
+			Test("Report sequence is Skip", func() {
+				Assert(signals[0] == reporting.SigTestSkipped)
 			})
 		})
 

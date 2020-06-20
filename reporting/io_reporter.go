@@ -95,20 +95,18 @@ func (reporter IOReporter) ContextFailed(prose string) {}
 // PanicInvoked does nothing
 func (reporter IOReporter) PanicInvoked(msg trace.Message) {
 	reporter.output.Indent()
-	if _, ok := msg.Data().(asserting.AssertionError); ok {
-		fmt.Fprintf(reporter.Device, "Panic Invoked, assertionerror\n")
-		// reporter.output.
-		// 	Text(err.Error()).
-		// 	NewLine()
+	if err, ok := msg.Data().(asserting.AssertionError); ok {
+		reporter.output.
+			Text(err.Error()).
+			NewLine()
 	} else {
-		// stacktrace := fmt.Sprintf("%+v", msg.StackTrace())
-		// reporter.output.
-		// 	Text(msg.Error()).
-		// 	NewLine().
-		// 	Indent().
-		// 	Text(stacktrace).
-		// 	NewLine()
-		fmt.Fprintf(reporter.Device, "Panic Invoked, generic\n")
+		stacktrace := fmt.Sprintf("%+v", msg.StackTrace())
+		reporter.output.
+			Text(msg.Error()).
+			NewLine().
+			Indent().
+			Text(stacktrace).
+			NewLine()
 	}
 
 	text := reporter.output.Flush()
