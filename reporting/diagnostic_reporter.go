@@ -70,7 +70,7 @@ func (reporter *DiagnosticReporter) ContextEntered(prose string) {
 }
 
 // ContextExited records SigContextExited
-func (reporter *DiagnosticReporter) ContextExited(prose string, _ BlockResult) {
+func (reporter *DiagnosticReporter) ContextExited(prose string, _ bool) {
 	message := DiagnosticMessage{SigContextExited, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }
@@ -106,7 +106,7 @@ func (reporter *DiagnosticReporter) TestFailed(prose string) {
 }
 
 // TestFinished records SigTestFinished
-func (reporter *DiagnosticReporter) TestFinished(prose string, _ BlockResult) {
+func (reporter *DiagnosticReporter) TestFinished(prose string, _ bool) {
 	message := DiagnosticMessage{SigTestFinished, prose}
 	reporter.Recorded = append(reporter.Recorded, message)
 }

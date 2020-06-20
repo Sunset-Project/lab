@@ -43,7 +43,7 @@ func (reporter IOReporter) ContextEntered(prose string) {
 }
 
 // ContextExited does nothing
-func (reporter IOReporter) ContextExited(prose string, result BlockResult) {
+func (reporter IOReporter) ContextExited(prose string, success bool) {
 	if prose == "" {
 		return
 	}
@@ -119,15 +119,11 @@ func (reporter IOReporter) PanicInvoked(msg trace.Message) {
 func (reporter IOReporter) TestFailed(prose string) {}
 
 // TestFinished does nothing
-func (reporter IOReporter) TestFinished(prose string, result BlockResult) {
-	if result == BlockSkipped {
-		return
-	}
-
+func (reporter IOReporter) TestFinished(prose string, success bool) {
 	reporter.output.Indent()
 
 	fgColor := sgr.Green
-	if result == BlockFailed {
+	if !success {
 		reporter.output.EscapeCode(sgr.Bold)
 		fgColor = sgr.Red
 	}
@@ -142,7 +138,7 @@ func (reporter IOReporter) TestFinished(prose string, result BlockResult) {
 		Text(title).
 		EscapeCode(sgr.ResetFg)
 
-	if result == BlockFailed {
+	if !success {
 		reporter.output.EscapeCode(sgr.ResetIntensity)
 	}
 

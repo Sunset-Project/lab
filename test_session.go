@@ -44,19 +44,18 @@ func (test *TestSession) Context(args ...interface{}) {
 		panic(ArgumentError{"args", "invalid amount"})
 	}
 
-	// EnterContext
-	test.reporter.ContextEntered(prose)
-	blockResult := reporting.BlockSucceeded
-	defer func() {
-		// LeaveContext
-		test.reporter.ContextExited(prose, blockResult)
-	}()
-
 	if do == nil {
 		// SkipContext
 		test.reporter.ContextSkipped(prose)
-		blockResult = reporting.BlockSkipped
 	} else {
+		// EnterContext
+		test.reporter.ContextEntered(prose)
+		blockSucceeded := true
+		defer func() {
+			// LeaveContext
+			test.reporter.ContextExited(prose, blockSucceeded)
+		}()
+
 		defer func() {
 			err := recover()
 
@@ -68,7 +67,7 @@ func (test *TestSession) Context(args ...interface{}) {
 				}
 				// FailContext
 				test.reporter.ContextFailed(prose)
-				blockResult = reporting.BlockFailed
+				blockSucceeded = false
 				test.controller.FailNow()
 			} else {
 				// SuccessContext
@@ -97,19 +96,17 @@ func (test *TestSession) Test(args ...interface{}) {
 		panic(ArgumentError{"args", "invalid amount"})
 	}
 
-	// EnterTest
-	test.reporter.TestStarted(prose)
-	blockResult := reporting.BlockSucceeded
-	defer func() {
-		// LeaveTest
-		test.reporter.TestFinished(prose, blockResult)
-	}()
-
 	if do == nil {
 		// SkipTest
 		test.reporter.TestSkipped(prose)
-		blockResult = reporting.BlockSkipped
 	} else {
+		// EnterTest
+		test.reporter.TestStarted(prose)
+		blockSucceeded := true
+		defer func() {
+			// LeaveTest
+			test.reporter.TestFinished(prose, blockSucceeded)
+		}()
 		defer func() {
 			if panicked {
 				err := recover()
@@ -120,7 +117,7 @@ func (test *TestSession) Test(args ...interface{}) {
 				}
 				// FailTest
 				test.reporter.TestFailed(prose)
-				blockResult = reporting.BlockFailed
+				blockSucceeded = false
 				test.controller.FailNow()
 			} else {
 				// SuccessTest
