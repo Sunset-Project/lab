@@ -16,8 +16,8 @@ type IOReporter struct {
 }
 
 var stdoutReporter IOReporter = IOReporter{
-	Device: os.Stdout
-	output: &OutputWriter{StylingEnabled: true}
+	Device: os.Stdout,
+	output: &OutputWriter{StylingEnabled: true},
 }
 
 // StdoutReporter prints test details to STDOUT

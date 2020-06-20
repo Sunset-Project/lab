@@ -1,7 +1,9 @@
 // Package sgr provides utilities to apply text styling in the terminal
 package sgr
 
-import "strconv"
+import (
+	"fmt"
+)
 
 // Code is a numerical representation of a certain text style in the terminal
 type Code uint
@@ -38,5 +40,5 @@ const (
 
 // String converts code into a string
 func (code Code) String() string {
-	return strconv.FormatUint(code, 10)
+	return fmt.Sprintf("%d", code)
 }

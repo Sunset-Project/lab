@@ -2,6 +2,8 @@ package reporting
 
 import (
 	"strings"
+
+	"github.com/sunset-project/lab/sgr"
 )
 
 // OutputWriter generates a string to be written to `io.Writer` as output of test execution
@@ -37,9 +39,14 @@ func (writer *OutputWriter) DecreaseIndentation() *OutputWriter {
 	return writer
 }
 
+// String returns the current text in the buffer
+func (writer *OutputWriter) String() string {
+	return writer.textBuffer.String()
+}
+
 // Compose returns the generated string and resets the buffer for the next one
 func (writer *OutputWriter) Compose() string {
-	output := writer.textBuffer.String()
+	output := writer.String()
 	writer.textBuffer.Reset()
 
 	return output
@@ -77,9 +84,9 @@ func (writer *OutputWriter) EscapeCode(code sgr.Code) *OutputWriter {
 	}
 
 	if writer.mode == modeText {
-		writer.mode == modeEscapeSequence
+		writer.mode = modeEscapeSequence
 
-		writer.Write("\e[")
+		writer.Write("\\e[")
 	} else {
 		writer.Write(";")
 	}
