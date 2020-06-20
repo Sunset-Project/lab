@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/sunset-project/lab/asserting"
+	"github.com/sunset-project/lab/sgr"
 	"github.com/sunset-project/lab/trace"
 )
 
@@ -28,14 +29,68 @@ func (reporter IOReporter) Asserted() {}
 
 // ContextEntered prints the context name
 func (reporter IOReporter) ContextEntered(prose string) {
-	fmt.Fprintf(reporter.Device, "%s\n", prose)
+	reporter.output.Indent()
+
+	if reporter.output.StylingEnabled {
+		reporter.output.
+			EscapeCode(sgr.Green).
+			Text(prose).
+			EscapeCode(sgr.ResetFg)
+	} else {
+		reporter.output.Text(prose)
+	}
+
+	reporter.output.NewLine()
+
+	text := reporter.output.Flush()
+	reporter.output.IncreaseIndentation()
+
+	fmt.Fprintf(reporter.Device, text)
 }
 
 // ContextExited does nothing
-func (reporter IOReporter) ContextExited(prose string) {}
+func (reporter IOReporter) ContextExited(prose string, result BlockResult) {
+	if prose == "" {
+		return
+	}
+
+	reporter.output.DecreaseIndentation()
+
+	if reporter.output.IndentationDepth == 0 {
+		reporter.output.NewLine()
+	}
+
+	text := reporter.output.Flush()
+
+	fmt.Fprintf(reporter.Device, text)
+}
 
 // ContextSkipped does nothing
-func (reporter IOReporter) ContextSkipped(prose string) {}
+func (reporter IOReporter) ContextSkipped(prose string) {
+	if prose == "" {
+		return
+	}
+	reporter.output.Indent()
+
+	if reporter.output.StylingEnabled {
+		reporter.output.
+			EscapeCode(sgr.Yellow).
+			Text(prose).
+			EscapeCode(sgr.ResetFg)
+	} else {
+		reporter.output.
+			Text(prose).
+			Text(" (skipped)")
+	}
+
+	reporter.output.NewLine()
+	if reporter.output.IndentationDepth == 0 {
+		reporter.output.NewLine()
+	}
+
+	text := reporter.output.Flush()
+	fmt.Fprintf(reporter.Device, text)
+}
 
 // ContextSucceeded does nothing
 func (reporter IOReporter) ContextSucceeded(prose string) {}
@@ -45,26 +100,86 @@ func (reporter IOReporter) ContextFailed(prose string) {}
 
 // PanicInvoked does nothing
 func (reporter IOReporter) PanicInvoked(msg trace.Message) {
+	reporter.output.Indent()
 	if err, ok := msg.Data().(asserting.AssertionError); ok {
-		fmt.Fprintf(reporter.Device, "\t%s\n", err.Error())
+		reporter.output.
+			Text(err.Error()).
+			NewLine()
 	} else {
-		fmt.Fprintf(reporter.Device, "\t%s\n\t%+v\n", msg.Error(), msg.StackTrace())
+		stacktrace := fmt.Sprintf("%+v", msg.StackTrace())
+		reporter.output.
+			Text(msg.Error()).
+			NewLine().
+			Indent().
+			Text(stacktrace).
+			NewLine()
 	}
+
+	text := reporter.output.Flush()
+	fmt.Fprintf(reporter.Device, text)
 }
 
 // TestFailed does nothing
 func (reporter IOReporter) TestFailed(prose string) {}
 
 // TestFinished does nothing
-func (reporter IOReporter) TestFinished(prose string) {}
+func (reporter IOReporter) TestFinished(prose string, result BlockResult) {
+	reporter.output.Indent()
+
+	fgColor := sgr.Red
+
+	if result == BlockFailed {
+		reporter.output.EscapeCode(sgr.Bold)
+		fgColor = sgr.Green
+	}
+
+	title := prose
+	if title == "" {
+		title = "Test"
+	}
+
+	reporter.output.
+		EscapeCode(fgColor).
+		Text(title).
+		EscapeCode(sgr.ResetFg)
+
+	if result == BlockFailed {
+		reporter.output.EscapeCode(sgr.ResetIntensity)
+	}
+
+	reporter.output.NewLine()
+	text := reporter.output.Flush()
+	fmt.Fprintf(reporter.Device, text)
+}
 
 // TestPassed does nothing
 func (reporter IOReporter) TestPassed(prose string) {}
 
 // TestSkipped does nothing
-func (reporter IOReporter) TestSkipped(prose string) {}
+func (reporter IOReporter) TestSkipped(prose string) {
+	title := prose
+	if title == "" {
+		title = "Test"
+	}
+
+	reporter.output.Indent()
+
+	if reporter.output.StylingEnabled {
+		reporter.output.
+			EscapeCode(sgr.Yellow).
+			Text(title).
+			EscapeCode(sgr.ResetFg)
+	} else {
+		reporter.output.
+			Text(title).
+			Text(" (skipped)")
+	}
+
+	reporter.output.NewLine()
+
+	text := reporter.output.Flush()
+	fmt.Fprintf(reporter.Device, text)
+}
 
 // TestStarted does nothing
-func (reporter IOReporter) TestStarted(prose string) {
-	fmt.Fprintf(reporter.Device, "\t%s\n", prose)
-}
+func (reporter IOReporter) TestStarted(prose string) {}

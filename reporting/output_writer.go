@@ -44,8 +44,8 @@ func (writer *OutputWriter) String() string {
 	return writer.textBuffer.String()
 }
 
-// Compose returns the generated string and resets the buffer for the next one
-func (writer *OutputWriter) Compose() string {
+// Flush returns the generated string and resets the buffer for the next one
+func (writer *OutputWriter) Flush() string {
 	output := writer.String()
 	writer.textBuffer.Reset()
 
@@ -67,7 +67,7 @@ func (writer *OutputWriter) Text(text string) *OutputWriter {
 // Indent appends indentation space based on the current indentation depth
 func (writer *OutputWriter) Indent() *OutputWriter {
 	for depth := uint(0); depth <= writer.IndentationDepth; depth++ {
-		writer.Text(" ")
+		writer.Text("  ")
 	}
 	return writer
 }
@@ -86,7 +86,7 @@ func (writer *OutputWriter) EscapeCode(code sgr.Code) *OutputWriter {
 	if writer.mode == modeText {
 		writer.mode = modeEscapeSequence
 
-		writer.Write("\\e[")
+		writer.Write("\u001b[")
 	} else {
 		writer.Write(";")
 	}

@@ -15,7 +15,7 @@ func TestDiagnosticReporter(t *testing.T) {
 
 		Context("Messages", func() {
 			reporter.ContextEntered("entered")
-			reporter.ContextExited("exited")
+			reporter.ContextExited("exited", reporting.BlockSucceeded)
 
 			messages := reporter.LastRecorded(2)
 
@@ -89,7 +89,7 @@ func TestDiagnosticReporter(t *testing.T) {
 		})
 
 		Context("Context Exited", func() {
-			reporter.ContextExited("exited")
+			reporter.ContextExited("exited", reporting.BlockSucceeded)
 
 			messages := reporter.LastRecorded(1)
 
@@ -156,9 +156,11 @@ func TestDiagnosticReporter(t *testing.T) {
 		})
 
 		Context("Test Finished", func() {
-			reporter.TestFinished("finished")
+			reporter.TestFinished("finished", reporting.BlockSucceeded)
 
 			messages := reporter.LastRecorded(1)
+
+			Test("Foo special")
 
 			Test("Records TestFinished message", func() {
 				Assert(messages[0].Signal == reporting.SigTestFinished)

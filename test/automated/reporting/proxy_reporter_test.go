@@ -76,7 +76,7 @@ func TestProxyReporter(t *testing.T) {
 		})
 
 		Context("Broadcasts ContextExited to all reporters", func() {
-			reporter.ContextExited("ContextExited")
+			reporter.ContextExited("ContextExited", reporting.BlockSucceeded)
 
 			signals1 := diagnosticReporter1.LastRecordedSignals(1)
 			signals2 := diagnosticReporter2.LastRecordedSignals(1)
@@ -149,7 +149,7 @@ func TestProxyReporter(t *testing.T) {
 		})
 
 		Context("Broadcasts TestFinished to all reporters", func() {
-			reporter.TestFinished("TestFinished")
+			reporter.TestFinished("TestFinished", reporting.BlockSucceeded)
 
 			signals1 := diagnosticReporter1.LastRecordedSignals(1)
 			signals2 := diagnosticReporter2.LastRecordedSignals(1)

@@ -45,14 +45,16 @@ func (test *testSession) Context(args ...interface{}) {
 
 	// EnterContext
 	test.reporter.ContextEntered(prose)
+	blockResult := reporting.BlockSucceeded
 	defer func() {
 		// LeaveContext
-		test.reporter.ContextExited(prose)
+		test.reporter.ContextExited(prose, blockResult)
 	}()
 
 	if do == nil {
 		// SkipContext
 		test.reporter.ContextSkipped(prose)
+		blockResult = reporting.BlockSkipped
 	} else {
 		defer func() {
 			err := recover()
@@ -63,6 +65,7 @@ func (test *testSession) Context(args ...interface{}) {
 				test.reporter.PanicInvoked(panicMsg)
 				// FailContext
 				test.reporter.ContextFailed(prose)
+				blockResult = reporting.BlockFailed
 				test.controller.FailNow()
 			} else {
 				// SuccessContext
@@ -93,14 +96,16 @@ func (test *testSession) Test(args ...interface{}) {
 
 	// EnterTest
 	test.reporter.TestStarted(prose)
+	blockResult := reporting.BlockSucceeded
 	defer func() {
 		// LeaveTest
-		test.reporter.TestFinished(prose)
+		test.reporter.TestFinished(prose, blockResult)
 	}()
 
 	if do == nil {
 		// SkipTest
 		test.reporter.TestSkipped(prose)
+		blockResult = reporting.BlockSkipped
 	} else {
 		defer func() {
 
@@ -111,6 +116,7 @@ func (test *testSession) Test(args ...interface{}) {
 				test.reporter.PanicInvoked(panicMsg)
 				// FailTest
 				test.reporter.TestFailed(prose)
+				blockResult = reporting.BlockFailed
 				test.controller.FailNow()
 			} else {
 				// SuccessTest

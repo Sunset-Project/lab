@@ -20,9 +20,9 @@ func (reporters ProxyReporter) ContextEntered(prose string) {
 }
 
 // ContextExited broadcasts ContextExited
-func (reporters ProxyReporter) ContextExited(prose string) {
+func (reporters ProxyReporter) ContextExited(prose string, result BlockResult) {
 	for _, reporter := range reporters {
-		reporter.ContextExited(prose)
+		reporter.ContextExited(prose, result)
 	}
 }
 
@@ -62,9 +62,9 @@ func (reporters ProxyReporter) TestFailed(prose string) {
 }
 
 // TestFinished broadcasts TestFinished
-func (reporters ProxyReporter) TestFinished(prose string) {
+func (reporters ProxyReporter) TestFinished(prose string, result BlockResult) {
 	for _, reporter := range reporters {
-		reporter.TestFinished(prose)
+		reporter.TestFinished(prose, result)
 	}
 }
 
