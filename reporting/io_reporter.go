@@ -56,8 +56,9 @@ func (reporter *IOReporter) ContextExited(prose string, success bool) {
 	}
 
 	if reporter.previousError != nil {
-		reporter.PrintError()
-		reporter.previousError = nil
+		reporter.output.IncreaseIndentation()
+		reporter.PrintPreviousError()
+		reporter.output.DecreaseIndentation()
 	}
 
 	text := reporter.output.Flush()
@@ -104,9 +105,7 @@ func (reporter *IOReporter) PanicInvoked(msg trace.Message) {
 }
 
 // PrintError outputs panic data with stacktrace
-func (reporter *IOReporter) PrintError() {
-	msg := reporter.previousError
-
+func (reporter *IOReporter) PrintError(msg trace.Message) {
 	reporter.output.Indent()
 
 	if err, ok := msg.Data().(asserting.AssertionError); ok {
@@ -122,6 +121,12 @@ func (reporter *IOReporter) PrintError() {
 			Text(stacktrace).
 			NewLine()
 	}
+}
+
+// PrintPreviousError prints the last occurred error and resets it to nil
+func (reporter *IOReporter) PrintPreviousError() {
+	reporter.PrintError(reporter.previousError)
+	reporter.previousError = nil
 }
 
 // TestFailed does nothing
@@ -154,8 +159,9 @@ func (reporter *IOReporter) TestFinished(prose string, success bool) {
 	reporter.output.NewLine()
 
 	if reporter.previousError != nil {
-		reporter.PrintError()
-		reporter.previousError = nil
+		reporter.output.IncreaseIndentation()
+		reporter.PrintPreviousError()
+		reporter.output.DecreaseIndentation()
 	}
 
 	text := reporter.output.Flush()
