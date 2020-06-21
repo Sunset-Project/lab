@@ -6,13 +6,13 @@ import (
 	"github.com/sunset-project/lab/trace"
 )
 
-// TestSession represent the execution of a set of tests within one `go test` function
+// TestSession represent the execution of a set of tests within one `go test` function. This type should be instantiated only through `NewTestSession`
 type TestSession struct {
 	controller TestController
 	reporter   reporting.Reporter
 }
 
-// NewTestSession prepares a new test unit to test code
+// NewTestSession prepares a new session to test code
 func NewTestSession(controller TestController, reporter reporting.Reporter) *TestSession {
 	if controller == nil {
 		panic(ArgumentError{"controller", "is nil"})

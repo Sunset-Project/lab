@@ -67,12 +67,16 @@ lab a/test/file_test.go
 ## TODO
 
 - IO Reporter
-  - [ ] Indentation should increase for each nested block
+  - [x] Indentation should increase for each nested block
+  - [ ] Error printing should be colored
+  - [ ] Error printing should be indented
   - [ ] Failed assertion line should be printed in the output
-  - [ ] Output should be colored
+  - [x] Output should be colored
   - [ ] Output coloring should be activated when it's a tty
 - [ ] `lab` bash function should be an executable released as part of this
   package
 - [ ] Configuration through environment variables
 - [ ] Stack trace during panic should exclude non-relevant lines
 - [ ] Remove `pkg/errors` dependency
+- [ ] `Context.Skip`
+- [ ] `Test.Skip`
