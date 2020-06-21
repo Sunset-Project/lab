@@ -12,23 +12,24 @@ import (
 
 // IOReporter prints test details to a device
 type IOReporter struct {
-	Device io.Writer
-	output *OutputWriter
+	Device        io.Writer
+	output        *OutputWriter
+	previousError trace.Message
 }
 
-var stdoutReporter IOReporter = IOReporter{
+var stdoutReporter *IOReporter = &IOReporter{
 	Device: os.Stdout,
 	output: &OutputWriter{StylingEnabled: true},
 }
 
 // StdoutReporter prints test details to STDOUT
-func StdoutReporter() IOReporter { return stdoutReporter }
+func StdoutReporter() *IOReporter { return stdoutReporter }
 
 // Asserted does nothing
-func (reporter IOReporter) Asserted() {}
+func (reporter *IOReporter) Asserted() {}
 
 // ContextEntered prints the context name
-func (reporter IOReporter) ContextEntered(prose string) {
+func (reporter *IOReporter) ContextEntered(prose string) {
 	text := reporter.output.
 		Indent().
 		EscapeCode(sgr.Green).
@@ -43,7 +44,7 @@ func (reporter IOReporter) ContextEntered(prose string) {
 }
 
 // ContextExited does nothing
-func (reporter IOReporter) ContextExited(prose string, success bool) {
+func (reporter *IOReporter) ContextExited(prose string, success bool) {
 	if prose == "" {
 		return
 	}
@@ -54,13 +55,18 @@ func (reporter IOReporter) ContextExited(prose string, success bool) {
 		reporter.output.NewLine()
 	}
 
+	if reporter.previousError != nil {
+		reporter.PrintError()
+		reporter.previousError = nil
+	}
+
 	text := reporter.output.Flush()
 
 	fmt.Fprintf(reporter.Device, text)
 }
 
 // ContextSkipped does nothing
-func (reporter IOReporter) ContextSkipped(prose string) {
+func (reporter *IOReporter) ContextSkipped(prose string) {
 	if prose == "" {
 		return
 	}
@@ -87,14 +93,22 @@ func (reporter IOReporter) ContextSkipped(prose string) {
 }
 
 // ContextSucceeded does nothing
-func (reporter IOReporter) ContextSucceeded(prose string) {}
+func (reporter *IOReporter) ContextSucceeded(prose string) {}
 
 // ContextFailed does nothing
-func (reporter IOReporter) ContextFailed(prose string) {}
+func (reporter *IOReporter) ContextFailed(prose string) {}
 
-// PanicInvoked does nothing
-func (reporter IOReporter) PanicInvoked(msg trace.Message) {
+// PanicInvoked sets previous error
+func (reporter *IOReporter) PanicInvoked(msg trace.Message) {
+	reporter.previousError = msg
+}
+
+// PrintError outputs panic data with stacktrace
+func (reporter *IOReporter) PrintError() {
+	msg := reporter.previousError
+
 	reporter.output.Indent()
+
 	if err, ok := msg.Data().(asserting.AssertionError); ok {
 		reporter.output.
 			Text(err.Error()).
@@ -108,16 +122,13 @@ func (reporter IOReporter) PanicInvoked(msg trace.Message) {
 			Text(stacktrace).
 			NewLine()
 	}
-
-	text := reporter.output.Flush()
-	fmt.Fprintf(reporter.Device, text)
 }
 
 // TestFailed does nothing
-func (reporter IOReporter) TestFailed(prose string) {}
+func (reporter *IOReporter) TestFailed(prose string) {}
 
 // TestFinished does nothing
-func (reporter IOReporter) TestFinished(prose string, success bool) {
+func (reporter *IOReporter) TestFinished(prose string, success bool) {
 	reporter.output.Indent()
 
 	fgColor := sgr.Green
@@ -141,15 +152,21 @@ func (reporter IOReporter) TestFinished(prose string, success bool) {
 	}
 
 	reporter.output.NewLine()
+
+	if reporter.previousError != nil {
+		reporter.PrintError()
+		reporter.previousError = nil
+	}
+
 	text := reporter.output.Flush()
 	fmt.Fprintf(reporter.Device, text)
 }
 
 // TestPassed does nothing
-func (reporter IOReporter) TestPassed(prose string) {}
+func (reporter *IOReporter) TestPassed(prose string) {}
 
 // TestSkipped does nothing
-func (reporter IOReporter) TestSkipped(prose string) {
+func (reporter *IOReporter) TestSkipped(prose string) {
 	title := prose
 	if title == "" {
 		title = "Test"
@@ -175,4 +192,4 @@ func (reporter IOReporter) TestSkipped(prose string) {
 }
 
 // TestStarted does nothing
-func (reporter IOReporter) TestStarted(prose string) {}
+func (reporter *IOReporter) TestStarted(prose string) {}

@@ -11,7 +11,7 @@ func TestIOReporter(t *testing.T) {
 	Context, Test, Assert := lab.StartSession(t)
 	Context("IO Reporter", func() {
 		writer := &reporting.DiagnosticStringWriter{}
-		reporter := reporting.IOReporter{Device: writer}
+		reporter := &reporting.IOReporter{Device: writer}
 
 		Context("Asserted", func() {
 			reporter.Asserted()
