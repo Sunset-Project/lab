@@ -11,3 +11,23 @@ func SessionExample() (lab.Session, *reporting.DiagnosticReporter, *lab.Diagnost
 	controller := &lab.DiagnosticTestController{}
 	return lab.NewSession(controller, reporter), reporter, controller
 }
+
+// AssertFalseInNestedContextTestExample asserts value false
+func AssertFalseInNestedContextTestExample(session lab.Session) {
+	Context, Test, Assert := lab.UseSession(session)
+	Context("Context", func() {
+		Test("Test", func() {
+			Assert(false)
+		})
+	})
+}
+
+// AssertTrueInNestedContextTestExample asserts value true
+func AssertTrueInNestedContextTestExample(session lab.Session) {
+	Context, Test, Assert := lab.UseSession(session)
+	Context("Context", func() {
+		Test("Test", func() {
+			Assert(true)
+		})
+	})
+}
