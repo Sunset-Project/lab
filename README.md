@@ -68,9 +68,10 @@ lab a/test/file_test.go
 
 - IO Reporter
   - [x] Indentation should increase for each nested block
-  - [ ] Error printing should be colored
-  - [ ] Error printing should be indented
+  - [x] Error printing should be colored
+  - [x] Error printing should be indented
   - [ ] Failed assertion line should be printed in the output
+  - [ ] Panic line should be printed in the output
   - [x] Output should be colored
   - [ ] Output coloring should be activated when it's a tty
 - [ ] `lab` bash function should be an executable released as part of this

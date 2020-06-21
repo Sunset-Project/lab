@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/sunset-project/lab/asserting"
 	"github.com/sunset-project/lab/sgr"
@@ -106,21 +107,28 @@ func (reporter *IOReporter) PanicInvoked(msg trace.Message) {
 
 // PrintError outputs panic data with stacktrace
 func (reporter *IOReporter) PrintError(msg trace.Message) {
-	reporter.output.Indent()
+	reporter.output.
+		Indent().
+		EscapeCode(sgr.Red)
 
 	if err, ok := msg.Data().(asserting.AssertionError); ok {
-		reporter.output.
-			Text(err.Error()).
-			NewLine()
+		reporter.output.Text(err.Error())
 	} else {
 		stacktrace := fmt.Sprintf("%+v", msg.StackTrace())
-		reporter.output.
-			Text(msg.Error()).
-			NewLine().
-			Indent().
-			Text(stacktrace).
-			NewLine()
+		traces := strings.Split(stacktrace, "\n")
+
+		reporter.output.Text(msg.Error())
+
+		for _, line := range traces {
+			reporter.output.
+				Indent().
+				Text(line).
+				Text("\n")
+		}
 	}
+	reporter.output.
+		EscapeCode(sgr.ResetFg).
+		NewLine()
 }
 
 // PrintPreviousError prints the last occurred error and resets it to nil
