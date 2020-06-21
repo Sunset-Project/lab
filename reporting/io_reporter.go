@@ -118,6 +118,7 @@ func (reporter *IOReporter) PrintError(msg trace.Message) {
 		traces := strings.Split(stacktrace, "\n")
 
 		reporter.output.Text(msg.Error())
+		reporter.output.IncreaseIndentation()
 
 		for _, line := range traces {
 			reporter.output.
@@ -125,6 +126,8 @@ func (reporter *IOReporter) PrintError(msg trace.Message) {
 				Text(line).
 				Text("\n")
 		}
+
+		reporter.output.DecreaseIndentation()
 	}
 	reporter.output.
 		EscapeCode(sgr.ResetFg).
