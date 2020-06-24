@@ -77,6 +77,7 @@ lab a/test/file_test.go
 - [ ] `lab` bash function should be an executable released as part of this
   package
 - [ ] Configuration through environment variables
+- [ ] Disable output with environment variable
 - [ ] Stack trace during panic should exclude non-relevant lines
 - [ ] Remove `pkg/errors` dependency
 - [ ] `Context.Skip`

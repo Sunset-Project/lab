@@ -20,6 +20,8 @@ func TestLab(t *testing.T) {
 				signals := reporter.LastRecordedSignals(8)
 
 				Test("Report sequence is ContextEntered, TestStarted, Asserted, PanicInvoked, TestFailed, TestFinished, ContextSucceeded, ContextExited", func() {
+					panic("popo")
+					// Assert(false)
 					Assert(signals[0] == reporting.SigContextEntered)
 					Assert(signals[1] == reporting.SigTestStarted)
 					Assert(signals[2] == reporting.SigAsserted)

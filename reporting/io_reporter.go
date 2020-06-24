@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/sunset-project/lab/asserting"
 	"github.com/sunset-project/lab/sgr"
@@ -107,31 +106,91 @@ func (reporter *IOReporter) PanicInvoked(msg trace.Message) {
 
 // PrintError outputs panic data with stacktrace
 func (reporter *IOReporter) PrintError(msg trace.Message) {
-	reporter.output.
-		Indent().
-		EscapeCode(sgr.Red)
 
 	if err, ok := msg.Data().(asserting.AssertionError); ok {
-		reporter.output.Text(err.Error())
+		reporter.output.
+			Indent().
+			EscapeCode(sgr.Red).
+			Text(err.Error()).
+			EscapeCode(sgr.ResetFg).
+			NewLine()
 	} else {
-		stacktrace := fmt.Sprintf("%+v", msg.StackTrace())
-		traces := strings.Split(stacktrace, "\n")
+		reporter.output.
+			Indent().
+			EscapeCode(sgr.White).
+			EscapeCode(sgr.RedBg).
+			Text(msg.Error()).
+			EscapeCode(sgr.ResetBg).
+			EscapeCode(sgr.ResetFg).
+			NewLine().
+			IncreaseIndentation().
+			IncreaseIndentation()
 
-		reporter.output.Text(msg.Error())
-		reporter.output.IncreaseIndentation()
+		reporter.output.EscapeCode(sgr.Red)
 
-		for _, line := range traces {
+		stackTrace := msg.StackTrace()
+		isTopOmitted := false
+		testRunnerIndex := len(stackTrace) - 3
+		isFirstFrame := true
+
+		for index, frame := range stackTrace {
+			if index < 3 {
+				continue
+			}
+			if index >= testRunnerIndex {
+				break
+			}
+
+			if !isTopOmitted {
+				isTopOmitted = true
+				reporter.output.
+					Indent().
+					EscapeCode(sgr.Italic).
+					Text("*omitted*").
+					EscapeCode(sgr.ResetItalic).
+					NewLine()
+			}
+
+			entry := trace.Entry{Frame: frame}
+
+			funcName := entry.FunctionName()
+			filePath := entry.SourcePath()
+			line := entry.SourceLine()
+			fileLine := fmt.Sprintf("%s:%d", filePath, line)
+
+			if isFirstFrame {
+				reporter.output.EscapeCode(sgr.Bold)
+			}
+
 			reporter.output.
 				Indent().
-				Text(line).
-				Text("\n")
+				Text(funcName).
+				NewLine().
+				IncreaseIndentation().
+				Indent().
+				Text(fileLine).
+				NewLine().
+				DecreaseIndentation()
+
+			if isFirstFrame {
+				reporter.output.EscapeCode(sgr.ResetIntensity)
+				isFirstFrame = false
+			}
 		}
 
-		reporter.output.DecreaseIndentation()
+		reporter.output.
+			Indent().
+			EscapeCode(sgr.Italic).
+			Text("*omitted*").
+			EscapeCode(sgr.ResetItalic).
+			NewLine()
+
+		reporter.output.
+			DecreaseIndentation().
+			DecreaseIndentation().
+			EscapeCode(sgr.ResetFg).
+			NewLine()
 	}
-	reporter.output.
-		EscapeCode(sgr.ResetFg).
-		NewLine()
 }
 
 // PrintPreviousError prints the last occurred error and resets it to nil
