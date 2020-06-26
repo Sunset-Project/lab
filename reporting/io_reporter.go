@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/sunset-project/lab/asserting"
+	"github.com/sunset-project/lab/file"
 	"github.com/sunset-project/lab/sgr"
 	"github.com/sunset-project/lab/trace"
 )
@@ -159,6 +160,26 @@ func (reporter *IOReporter) PrintError(msg trace.Message) {
 			fileLine := fmt.Sprintf("%s:%d", filePath, line)
 
 			if isFirstFrame {
+				lines, err := file.ReadLineWithBuffers(filePath, line, 3, 3)
+
+				if err == nil {
+					for _, printingLine := range lines.Before {
+						reporter.output.
+							Indent().
+							Text(printingLine)
+					}
+					reporter.output.
+						EscapeCode(sgr.Bold).
+						Indent().
+						Text(lines.Exact).
+						EscapeCode(sgr.ResetIntensity)
+					for _, printingLine := range lines.After {
+						reporter.output.
+							Indent().
+							Text(printingLine)
+					}
+				}
+
 				reporter.output.EscapeCode(sgr.Bold)
 			}
 
