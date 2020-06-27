@@ -58,19 +58,20 @@ func NewLinesScanner(rd io.Reader) LinesScanner {
 func (iterator *linesIterator) ReadEntireLine() (string, error) {
 	reader := iterator.reader
 	var entireLine strings.Builder
-	var err error
 
-	for line, isPrefix, err := reader.ReadLine(); isPrefix != true && err == nil || err == io.EOF {
+	for {
+		line, isPrefix, err := reader.ReadLine()
+		if err != nil && err != io.EOF {
+			return "", err
+		}
+
 		_, bufErr := entireLine.Write(line)
 		if bufErr != nil {
 			return "", bufErr
 		}
-	}
 
-	_, bufErr := entireLine.Write(line)
-	if bufErr != nil {
-		return "", bufErr
+		if isPrefix == false && (err == nil || err == io.EOF) {
+			return entireLine.String(), err
+		}
 	}
-
-	return entireLine.String(), err
 }

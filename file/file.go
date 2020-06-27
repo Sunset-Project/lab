@@ -7,9 +7,10 @@ import (
 
 // Lines represents a single file line with a buffer indicating the lines before and after it
 type Lines struct {
-	Before []string
-	Exact  string
-	After  []string
+	FirstLine int
+	Before    []string
+	Exact     string
+	After     []string
 }
 
 // ReadLineWithBuffers returns the specified line with a buffer of lines before and after it
@@ -20,7 +21,7 @@ func ReadLineWithBuffers(path string, currentLine int, beforeLinesAmount int, af
 		firstLine = 1
 	}
 
-	lines := Lines{}
+	lines := Lines{FirstLine: firstLine}
 	file, err := os.Open(path)
 	defer file.Close()
 
@@ -51,5 +52,5 @@ func ReadLineWithBuffers(path string, currentLine int, beforeLinesAmount int, af
 		lineIndex++
 	}
 
-	return lines, err
+	return lines, nil
 }

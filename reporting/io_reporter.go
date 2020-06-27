@@ -105,6 +105,48 @@ func (reporter *IOReporter) PanicInvoked(msg trace.Message) {
 	reporter.previousError = msg
 }
 
+// PrintSourceLines outputs the line causing panic as well as surrounding lines
+func (reporter *IOReporter) PrintSourceLines(lines file.Lines) {
+	if lines.Exact == "" {
+		return
+	}
+
+	reporter.output.NewLine()
+	lineIndex := lines.FirstLine
+
+	for _, printingLine := range lines.Before {
+		lineNum := fmt.Sprintf("%d\t\t", lineIndex)
+		reporter.output.
+			Indent().
+			Text(lineNum).
+			Text(printingLine).
+			NewLine()
+		lineIndex++
+	}
+
+	lineNum := fmt.Sprintf("%d\t\t", lineIndex)
+	reporter.output.
+		EscapeCode(sgr.Bold).
+		Indent().
+		Text(lineNum).
+		Text(lines.Exact).
+		NewLine().
+		EscapeCode(sgr.ResetIntensity)
+	lineIndex++
+
+	for _, printingLine := range lines.After {
+		lineNum := fmt.Sprintf("%d\t\t", lineIndex)
+		reporter.output.
+			Indent().
+			Text(lineNum).
+			Text(printingLine).
+			NewLine()
+		lineIndex++
+	}
+
+	reporter.output.NewLine()
+}
+
 // PrintError outputs panic data with stacktrace
 func (reporter *IOReporter) PrintError(msg trace.Message) {
 
@@ -142,6 +184,20 @@ func (reporter *IOReporter) PrintError(msg trace.Message) {
 				break
 			}
 
+			entry := trace.Entry{Frame: frame}
+
+			funcName := entry.FunctionName()
+			filePath := entry.SourcePath()
+			line := entry.SourceLine()
+			fileLine := fmt.Sprintf("%s:%d", filePath, line)
+
+			if isFirstFrame {
+				lines, err := file.ReadLineWithBuffers(filePath, line, 3, 3)
+				if err == nil {
+					reporter.PrintSourceLines(lines)
+				}
+			}
+
 			if !isTopOmitted {
 				isTopOmitted = true
 				reporter.output.
@@ -152,34 +208,7 @@ func (reporter *IOReporter) PrintError(msg trace.Message) {
 					NewLine()
 			}
 
-			entry := trace.Entry{Frame: frame}
-
-			funcName := entry.FunctionName()
-			filePath := entry.SourcePath()
-			line := entry.SourceLine()
-			fileLine := fmt.Sprintf("%s:%d", filePath, line)
-
 			if isFirstFrame {
-				lines, err := file.ReadLineWithBuffers(filePath, line, 3, 3)
-
-				if err == nil {
-					for _, printingLine := range lines.Before {
-						reporter.output.
-							Indent().
-							Text(printingLine)
-					}
-					reporter.output.
-						EscapeCode(sgr.Bold).
-						Indent().
-						Text(lines.Exact).
-						EscapeCode(sgr.ResetIntensity)
-					for _, printingLine := range lines.After {
-						reporter.output.
-							Indent().
-							Text(printingLine)
-					}
-				}
-
 				reporter.output.EscapeCode(sgr.Bold)
 			}
 
