@@ -6,7 +6,6 @@ import (
 	"github.com/sunset-project/lab"
 	"github.com/sunset-project/lab/controls"
 	"github.com/sunset-project/lab/reporting"
-	"github.com/sunset-project/lab/trace"
 )
 
 func TestLab(t *testing.T) {
@@ -21,9 +20,6 @@ func TestLab(t *testing.T) {
 				signals := reporter.LastRecordedSignals(8)
 
 				Test("Report sequence is ContextEntered, TestStarted, Asserted, PanicInvoked, TestFailed, TestFinished, ContextSucceeded, ContextExited", func() {
-					trace.DoStuff()
-					// panic("popo")
-					// Assert(false)
 					Assert(signals[0] == reporting.SigContextEntered)
 					Assert(signals[1] == reporting.SigTestStarted)
 					Assert(signals[2] == reporting.SigAsserted)
